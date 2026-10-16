@@ -16,7 +16,7 @@ export const perfil = {
   lema: 'Construyo software de punta a punta y automatizo procesos con IA: desde pipelines que investigan, producen y publican contenido casi sin intervención hasta sistemas heredados que vuelvo operables y medibles.',
   descripcion:
     'Full-stack developer especializado en automatización con IA. Construyo software de punta a punta, pipelines con IA en producción y modernizo sistemas heredados, como una plataforma bancaria en tres países.',
-  correo: 'omar.1993.ds@hotmail.com',
+  correo: 'contacto@omarsampayo.dev',
   github: 'https://github.com/GearSpeed',
   githubUsuario: 'GearSpeed',
   linkedin: 'https://www.linkedin.com/in/omar-d-sampayo/',

@@ -17,7 +17,8 @@
   // como *Secret* en el panel: `wrangler deploy` conserva los secretos pero borra las
   // variables de texto creadas a mano, por eso estas viven aquí.
   "vars": {
-    "CONTACTO_DESTINO": "omar.1993.ds@hotmail.com",
+    // Cloudflare Email Routing reenvía contacto@ al buzón personal, que así no queda en el repo.
+    "CONTACTO_DESTINO": "contacto@omarsampayo.dev",
     "CONTACTO_REMITENTE": "Portafolio <contacto@omarsampayo.dev>",
   },
   "observability": { "enabled": true },
