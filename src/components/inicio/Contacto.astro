@@ -1,0 +1,194 @@
+---
+import Icono from '../Icono.astro';
+import { perfil } from '../../data/sitio';
+
+// Clave pública de Turnstile. Si falta, se usa la clave de pruebas de Cloudflare, que
+// siempre pasa en el navegador pero que la función del servidor rechaza con la clave
+// secreta real: el formulario no enviará correos hasta configurarla.
+const CLAVE_PRUEBAS = '1x00000000000000000000AA';
+const claveTurnstile = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || CLAVE_PRUEBAS;
+if (claveTurnstile === CLAVE_PRUEBAS && import.meta.env.PROD) {
+  console.warn('[contacto] PUBLIC_TURNSTILE_SITE_KEY no está definida: se usa la clave de pruebas de Turnstile.');
+}
+
+const garantias = ['Sin jerga técnica innecesaria', 'Enfoque en el problema de negocio, no solo en el código', 'Respondo personalmente cada mensaje'];
+
+// El valor viaja tal cual en el asunto del correo; la función lo limita a 100 caracteres.
+const tipos = [
+  'Modernizar un sistema existente o resolver una falla',
+  'Desarrollar un producto o plataforma web nueva',
+  'Automatizar procesos o integrar IA',
+  'Oferta de empleo o colaboración',
+  'Otro',
+];
+---
+
+<section id="contacto" aria-labelledby="contacto-titulo" class="mx-auto w-full max-w-7xl px-4 pt-24 pb-24 md:px-8 lg:px-16">
+  <div class="grid grid-cols-1 items-start gap-10 border-t border-line pt-10 lg:grid-cols-12">
+    <div class="space-y-4 lg:col-span-5">
+      <p class="rotulo tracking-widest">05 / Colaboración y contacto</p>
+      <h2 id="contacto-titulo" class="text-h3 font-semibold">¿Tienes un proyecto, sistema o desafío en mente?</h2>
+      <p class="text-body text-ink-soft">
+        Hablemos con claridad. Puedo ayudarte a analizar la viabilidad técnica, modernizar un sistema heredado o automatizar un proceso, o
+        sumarme a tu equipo.
+      </p>
+      <ul class="space-y-2 pt-2">
+        {
+          garantias.map((g) => (
+            <li class="flex items-center gap-2 text-small text-ink">
+              <Icono nombre="check-circle" tamano={18} class="shrink-0" />
+              {g}
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="card mt-6 p-4">
+        <p class="rotulo">Canal directo</p>
+        <a href={`mailto:${perfil.correo}`} class="mt-1 block text-h4 font-semibold break-all text-ink hover:underline hover:underline-offset-4">
+          {perfil.correo}
+        </a>
+        <p class="mt-0.5 text-small text-ink-muted">Ciudad de México · UTC-6</p>
+        <ul class="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-3 text-label font-medium text-ink-muted">
+          <li>
+            <a href={perfil.linkedin} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 hover:text-ink">
+              <Icono nombre="linkedin" tamano={16} /> LinkedIn<span class="sr-only"> (abre en otra pestaña)</span>
+            </a>
+          </li>
+          <li>
+            <a href={perfil.github} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 hover:text-ink">
+              <Icono nombre="github" tamano={16} /> GitHub<span class="sr-only"> (abre en otra pestaña)</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card p-6 shadow-pop sm:p-10 lg:col-span-7">
+      <form id="formulario-contacto" action="/api/contacto" method="post" class="space-y-4" novalidate>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="space-y-1">
+            <label for="contacto-nombre" class="rotulo">Tu nombre o empresa</label>
+            <input
+              id="contacto-nombre"
+              name="nombre"
+              type="text"
+              required
+              maxlength="100"
+              autocomplete="name"
+              placeholder="Nombre o empresa"
+              class="campo"
+            />
+          </div>
+          <div class="space-y-1">
+            <label for="contacto-correo" class="rotulo">Correo electrónico</label>
+            <input
+              id="contacto-correo"
+              name="correo"
+              type="email"
+              required
+              maxlength="200"
+              autocomplete="email"
+              placeholder="correo@dominio.com"
+              class="campo"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label for="contacto-tipo" class="rotulo">Tipo de proyecto o necesidad</label>
+          <select id="contacto-tipo" name="tipo" class="campo">
+            {tipos.map((t) => <option value={t}>{t}</option>)}
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label for="contacto-mensaje" class="rotulo">Cuéntame brevemente sobre tu reto</label>
+          <textarea
+            id="contacto-mensaje"
+            name="mensaje"
+            required
+            minlength="10"
+            maxlength="5000"
+            rows="5"
+            placeholder="¿Qué objetivo buscas y en qué fase está tu iniciativa?"
+            class="campo resize-y"
+          ></textarea>
+        </div>
+
+        <!-- Trampa para bots: invisible para personas y lectores de pantalla. -->
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+          <label for="contacto-sitio">No llenar este campo</label>
+          <input id="contacto-sitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="cf-turnstile" data-sitekey={claveTurnstile} data-theme="dark" data-language="es" data-size="flexible"></div>
+
+        <button type="submit" class="btn btn-primario w-full disabled:cursor-wait disabled:opacity-70">
+          <span data-texto-boton>Enviar mensaje →</span>
+        </button>
+        <p id="contacto-estado" role="status" aria-live="polite" class="text-small"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script>
+  type Respuesta = { ok: boolean; mensaje: string };
+  type Turnstile = { reset: () => void };
+
+  const formulario = document.getElementById('formulario-contacto') as HTMLFormElement | null;
+  const estado = document.getElementById('contacto-estado');
+  const boton = formulario?.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const textoBoton = boton?.querySelector<HTMLElement>('[data-texto-boton]');
+
+  function mostrar(texto: string, exito: boolean) {
+    if (!estado) return;
+    estado.textContent = texto;
+    estado.className = `text-small ${exito ? 'text-ink' : 'text-danger'}`;
+  }
+
+  formulario?.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+
+    if (!formulario.checkValidity()) {
+      const invalido = formulario.querySelector<HTMLInputElement | HTMLTextAreaElement>(':invalid');
+      mostrar('Revisa los campos: nombre, un correo válido y un mensaje de al menos 10 caracteres.', false);
+      invalido?.focus();
+      return;
+    }
+
+    const datos = new FormData(formulario);
+    if (!datos.get('cf-turnstile-response')) {
+      mostrar('Espera un momento a que termine la verificación antispam e inténtalo de nuevo.', false);
+      return;
+    }
+
+    if (boton) boton.disabled = true;
+    if (textoBoton) textoBoton.textContent = 'Enviando…';
+    mostrar('', true);
+
+    try {
+      const respuesta = await fetch(formulario.action, {
+        method: 'POST',
+        body: datos,
+        headers: { Accept: 'application/json' },
+      });
+      const cuerpo = (await respuesta.json().catch(() => null)) as Respuesta | null;
+      if (respuesta.ok && cuerpo?.ok) {
+        formulario.reset();
+        mostrar('✓ Mensaje enviado. Te responderé pronto.', true);
+      } else {
+        mostrar(cuerpo?.mensaje ?? 'No se pudo enviar el mensaje. Escríbeme directo por correo.', false);
+      }
+    } catch {
+      mostrar('No hubo conexión. Inténtalo de nuevo o escríbeme directo por correo.', false);
+    } finally {
+      (window as unknown as { turnstile?: Turnstile }).turnstile?.reset();
+      if (boton) boton.disabled = false;
+      if (textoBoton) textoBoton.textContent = 'Enviar mensaje →';
+    }
+  });
+</script>

@@ -1,0 +1,50 @@
+---
+import Icono from '../Icono.astro';
+import { perfil } from '../../data/sitio';
+
+const enlaces = [
+  { href: perfil.linkedin, icono: 'linkedin', texto: 'LinkedIn', externo: true },
+  { href: perfil.github, icono: 'github', texto: 'GitHub', externo: true },
+  { href: `mailto:${perfil.correo}`, icono: 'mail', texto: perfil.correo, externo: false },
+  { href: perfil.cv, icono: 'file-text', texto: 'CV (PDF)', externo: false, descarga: true },
+];
+---
+
+<section id="inicio" class="mx-auto flex w-full max-w-7xl flex-col items-center px-4 pt-16 text-center md:px-8 md:pt-24 lg:px-16">
+  <p class="mb-10 inline-flex items-center gap-2 rounded-full border border-line bg-elevated px-3 py-1">
+    <span class="size-2 rounded-full bg-ink motion-safe:animate-pulse" aria-hidden="true"></span>
+    <span class="rotulo tracking-widest">{perfil.disponibilidad}</span>
+  </p>
+
+  <div class="mb-6 size-28 overflow-hidden rounded-full border border-line-strong bg-elevated p-1 md:size-32">
+    <img src="/img/monograma-256.webp" alt="" width="128" height="128" class="size-full rounded-full" />
+  </div>
+
+  <h1 class="max-w-4xl text-display-sm font-bold md:text-display">{perfil.nombre}</h1>
+  <p class="mt-2 text-h4 font-normal text-ink-muted">{perfil.rol} · {perfil.cargo}</p>
+  <p class="mt-4 max-w-2xl text-lead text-ink-soft">{perfil.lema}</p>
+
+  <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+    <a href="#proyectos" class="btn btn-primario">Ver proyectos seleccionados →</a>
+    <a href="#contacto" class="btn btn-secundario">Iniciar conversación</a>
+  </div>
+
+  <ul class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-line pt-6 text-ink-muted">
+    {
+      enlaces.map((e) => (
+        <li>
+          <a
+            href={e.href}
+            {...(e.externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            {...(e.descarga ? { download: '' } : {})}
+            class="inline-flex items-center gap-1.5 text-label font-medium transition-colors hover:text-ink"
+          >
+            <Icono nombre={e.icono} tamano={16} />
+            {e.texto}
+            {e.externo && <span class="sr-only">(abre en otra pestaña)</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

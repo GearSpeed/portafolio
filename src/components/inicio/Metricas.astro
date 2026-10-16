@@ -1,0 +1,38 @@
+---
+import Seccion from '../Seccion.astro';
+import { metricas } from '../../data/sitio';
+---
+
+<Seccion
+  id="impacto"
+  numero="01"
+  etiqueta="Resultados verificables"
+  titulo="Impacto medible en producción"
+  intro="Cada cifra sale de un sistema real y lleva a su caso de estudio."
+>
+  <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    {
+      metricas.map((m) => (
+        <li>
+          <a
+            href={m.href}
+            class="card group flex h-full flex-col justify-between p-6 transition-colors hover:border-line-strong"
+          >
+            <span class="block space-y-2">
+              <span class="rotulo block">{m.etiqueta}</span>
+              <span class="block text-h3 font-bold text-ink sm:text-[2rem] sm:leading-10">
+                {m.valor}
+                {m.unidad && <span class="text-body font-normal tracking-normal text-ink-muted"> {m.unidad}</span>}
+              </span>
+              <span class="block text-small text-ink-muted transition-colors group-hover:text-ink-soft">{m.detalle}</span>
+            </span>
+            <span class="mt-4 flex items-center justify-between gap-3 border-t border-line pt-4">
+              <span class="rotulo">{m.pie.etiqueta}</span>
+              <span class="rotulo text-right text-ink">{m.pie.valor}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Seccion>

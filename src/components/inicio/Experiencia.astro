@@ -1,0 +1,56 @@
+---
+import Seccion from '../Seccion.astro';
+import { experiencia } from '../../data/sitio';
+import { conNegritas } from '../../lib/texto';
+---
+
+<Seccion
+  id="experiencia"
+  numero="03"
+  etiqueta="Trayectoria profesional"
+  titulo="Experiencia"
+  intro="De la operación de redes a liderar técnicamente una plataforma bancaria en tres países."
+>
+  <ol class="max-w-4xl space-y-4">
+    {
+      experiencia.map((p) => (
+        <li class="card space-y-4 p-6 transition-colors hover:border-line-strong">
+          <header class="flex flex-col justify-between gap-1 sm:flex-row sm:items-start sm:gap-6">
+            <div class="space-y-0.5">
+              <h3 class="text-h4 font-semibold">{p.puesto}</h3>
+              <p class="text-small text-ink-muted">
+                {p.empresa}
+                {p.contexto && <> · {p.contexto}</>}
+              </p>
+            </div>
+            <p class="rotulo shrink-0 sm:pt-1.5">
+              {p.periodo}
+              {p.actual && <span class="text-ink"> · En curso</span>}
+            </p>
+          </header>
+
+          <ul class="space-y-2 text-body text-ink-soft">
+            {p.logros.map((logro) => (
+              <li class="relative pl-5 before:absolute before:top-3 before:left-0.5 before:h-px before:w-2 before:bg-ink-muted">
+                <span set:html={conNegritas(logro)} />
+              </li>
+            ))}
+          </ul>
+
+          {p.otros && (
+            <p class="text-small text-ink-muted">
+              <span class="font-medium text-ink">{p.otros.titulo}: </span>
+              {p.otros.texto}
+            </p>
+          )}
+
+          <ul class="flex flex-wrap gap-1.5 pt-1" aria-label="Tecnologías">
+            {p.stack.map((t) => (
+              <li class="chip">{t}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+</Seccion>

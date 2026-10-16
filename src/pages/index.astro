@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/inicio/Hero.astro';
+import Metricas from '../components/inicio/Metricas.astro';
+import Proyectos from '../components/inicio/Proyectos.astro';
+import Diagnostico from '../components/inicio/Diagnostico.astro';
+import Experiencia from '../components/inicio/Experiencia.astro';
+import SobreMi from '../components/inicio/SobreMi.astro';
+import Contacto from '../components/inicio/Contacto.astro';
+import { perfil } from '../data/sitio';
+---
+
+<Base titulo={`${perfil.nombre} · ${perfil.rol} y ${perfil.rolIA}`} descripcion={perfil.descripcion}>
+  <Hero />
+  <Metricas />
+  <Proyectos />
+  <Diagnostico />
+  <Experiencia />
+  <SobreMi />
+  <Contacto />
+</Base>

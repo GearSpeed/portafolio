@@ -1,0 +1,310 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+/*
+ * Tokens del sistema "Monochrome Editorial" (DESIGN.md del maquetado de Stitch).
+ * Paleta acromática: la jerarquía sale de la escala tipográfica, el peso y el espacio,
+ * no del color. El gris terciario (#555) no llega a 4.5:1 sobre negro, así que solo se
+ * usa en separadores y adornos; todo texto secundario va en `ink-muted` (#888).
+ */
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Code', Menlo, monospace;
+
+  --color-canvas: #050505;
+  --color-surface: #0c0c0c;
+  --color-elevated: #141414;
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.18);
+
+  --color-ink: #ffffff;
+  --color-ink-soft: #c4c7c7;
+  --color-ink-muted: #888888;
+  --color-ink-faint: #555555;
+  --color-danger: #ffb4ab;
+
+  --text-display: 3.5rem;
+  --text-display--line-height: 4rem;
+  --text-display--letter-spacing: -0.04em;
+  --text-display-sm: 2.25rem;
+  --text-display-sm--line-height: 2.75rem;
+  --text-display-sm--letter-spacing: -0.03em;
+  --text-h2: 2.5rem;
+  --text-h2--line-height: 3rem;
+  --text-h2--letter-spacing: -0.03em;
+  --text-h3: 1.75rem;
+  --text-h3--line-height: 2.25rem;
+  --text-h3--letter-spacing: -0.02em;
+  --text-h4: 1.25rem;
+  --text-h4--line-height: 1.75rem;
+  --text-h4--letter-spacing: -0.01em;
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.875rem;
+  --text-lead--letter-spacing: -0.01em;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.625rem;
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.375rem;
+  --text-small--letter-spacing: 0.01em;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.25rem;
+  --text-label--letter-spacing: 0.02em;
+  --text-overline: 0.6875rem;
+  --text-overline--line-height: 1rem;
+  --text-overline--letter-spacing: 0.08em;
+
+  --radius-control: 0.5rem;
+  --radius-card: 1rem;
+
+  --shadow-pop: 0 8px 32px rgb(0 0 0 / 0.8);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink-soft);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: #343535;
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Superficie de nivel 1: tarjetas y grupos. Al pasar el cursor solo se aviva el borde. */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  /* Rótulo en mayúsculas sobre los títulos («01 / Impacto») y metadatos. No se llama «overline»
+     porque Tailwind ya tiene esa utilidad (text-decoration: overline). */
+  .rotulo {
+    font-size: var(--text-overline);
+    line-height: var(--text-overline--line-height);
+    letter-spacing: var(--text-overline--letter-spacing);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  /* Etiqueta de tecnología o categoría */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    background: var(--color-elevated);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-control);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-label);
+    line-height: var(--text-label--line-height);
+    letter-spacing: var(--text-label--letter-spacing);
+    font-weight: 600;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      opacity 0.2s;
+  }
+
+  .btn-primario {
+    background: var(--color-ink);
+    color: var(--color-canvas);
+  }
+  .btn-primario:hover {
+    opacity: 0.92;
+  }
+
+  .btn-secundario {
+    background: transparent;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    color: var(--color-ink);
+  }
+  .btn-secundario:hover {
+    background: rgb(255 255 255 / 0.05);
+    border-color: rgb(255 255 255 / 0.25);
+  }
+
+  /* Campos del formulario */
+  .campo {
+    width: 100%;
+    border-radius: var(--radius-control);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: var(--color-surface);
+    padding: 0.625rem 1rem;
+    color: var(--color-ink);
+    font-size: var(--text-body);
+    transition: border-color 0.2s;
+  }
+  .campo::placeholder {
+    color: var(--color-ink-muted);
+  }
+  .campo:focus {
+    border-color: var(--color-ink);
+    outline: none;
+  }
+
+  /* Prosa de los casos de estudio (contenido Markdown) */
+  .prose-caso {
+    color: var(--color-ink-soft);
+    font-size: 1.0625rem;
+    line-height: 1.8rem;
+    max-width: 45rem;
+  }
+  .prose-caso > * + * {
+    margin-top: 1.25rem;
+  }
+  .prose-caso h2 {
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    letter-spacing: var(--text-h3--letter-spacing);
+    font-weight: 600;
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .prose-caso > h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .prose-caso h3 {
+    font-size: var(--text-h4);
+    line-height: var(--text-h4--line-height);
+    letter-spacing: var(--text-h4--letter-spacing);
+    font-weight: 600;
+    margin-top: 2rem;
+  }
+  .prose-caso strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .prose-caso a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .prose-caso ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .prose-caso ul > li {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+  .prose-caso ul > li + li,
+  .prose-caso ol > li + li {
+    margin-top: 0.6rem;
+  }
+  .prose-caso ul > li::before {
+    content: '';
+    position: absolute;
+    left: 0.125rem;
+    top: 0.8rem;
+    width: 0.5rem;
+    height: 1px;
+    background: var(--color-ink-muted);
+  }
+  .prose-caso ol {
+    list-style: decimal;
+    padding-left: 1.25rem;
+  }
+  .prose-caso ol > li::marker {
+    color: var(--color-ink-muted);
+  }
+  .prose-caso code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    color: var(--color-ink);
+    background: var(--color-elevated);
+    border: 1px solid var(--color-line);
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.35rem;
+  }
+  .prose-caso blockquote {
+    border-left: 2px solid var(--color-ink);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    color: var(--color-ink);
+    font-size: var(--text-h4);
+    line-height: 1.9rem;
+  }
+  .prose-caso table {
+    width: 100%;
+    font-size: var(--text-small);
+    line-height: var(--text-small--line-height);
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+  }
+  .prose-caso th,
+  .prose-caso td {
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+  .prose-caso th {
+    color: var(--color-ink);
+    font-size: var(--text-overline);
+    letter-spacing: var(--text-overline--letter-spacing);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}

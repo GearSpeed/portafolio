@@ -1,0 +1,23 @@
+---
+interface Props {
+  id: string;
+  numero: string;
+  etiqueta: string;
+  titulo: string;
+  intro?: string;
+  class?: string;
+}
+
+const { id, numero, etiqueta, titulo, intro, class: clase = '' } = Astro.props;
+---
+
+<section id={id} aria-labelledby={`${id}-titulo`} class:list={['mx-auto w-full max-w-7xl px-4 pt-24 md:px-8 lg:px-16', clase]}>
+  <div class="mb-8 flex flex-col justify-between gap-3 border-b border-line pb-4 md:flex-row md:items-end md:gap-8">
+    <div>
+      <p class="rotulo tracking-widest">{numero} / {etiqueta}</p>
+      <h2 id={`${id}-titulo`} class="mt-1 text-h3 font-semibold">{titulo}</h2>
+    </div>
+    {intro && <p class="max-w-sm text-small text-ink-muted md:text-right">{intro}</p>}
+  </div>
+  <slot />
+</section>

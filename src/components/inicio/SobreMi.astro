@@ -1,0 +1,87 @@
+---
+import Seccion from '../Seccion.astro';
+import { certificaciones, educacion, habilidades, idiomas, lenguajes, metodologia, principios } from '../../data/sitio';
+
+const grupos = [...habilidades, { grupo: 'Lenguajes', items: lenguajes }, { grupo: 'Metodología', items: metodologia }];
+---
+
+<Seccion
+  id="sobre-mi"
+  numero="04"
+  etiqueta="Sobre mí"
+  titulo="Cómo trabajo"
+  intro="No doy por buena la descripción del problema: lo reproduzco, lo mido y después lo corrijo."
+>
+  <ol class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      principios.map((p, i) => (
+        <li class="card p-6">
+          <span class="rotulo">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="mt-2 text-h4 font-semibold">{p.titulo}</h3>
+          <p class="mt-2 text-small text-ink-muted">{p.texto}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-7">
+      <h3 class="mb-6 text-h4 font-semibold">Habilidades</h3>
+      <dl class="divide-y divide-line border-y border-line">
+        {
+          grupos.map((g) => (
+            <div class="grid grid-cols-1 gap-2 py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
+              <dt class="rotulo sm:pt-1.5">{g.grupo}</dt>
+              <dd>
+                <ul class="flex flex-wrap gap-1.5">
+                  {g.items.map((t) => (
+                    <li class="chip">{t}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="space-y-10 lg:col-span-5">
+      <div>
+        <h3 class="mb-4 text-h4 font-semibold">Educación</h3>
+        <div class="card p-6">
+          <p class="font-medium text-ink">{educacion.titulo}</p>
+          <p class="mt-1 text-small text-ink-muted">{educacion.institucion} · {educacion.lugar}</p>
+          <p class="rotulo mt-3">{educacion.periodo}</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="mb-4 text-h4 font-semibold">Certificaciones</h3>
+        <ul class="divide-y divide-line border-y border-line">
+          {
+            certificaciones.map((c) => (
+              <li class="py-3 text-body text-ink-soft">
+                {c.titulo}
+                {c.emisor && <span class="text-ink-muted"> · {c.emisor}</span>}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="mb-4 text-h4 font-semibold">Idiomas</h3>
+        <dl class="divide-y divide-line border-y border-line">
+          {
+            idiomas.map((i) => (
+              <div class="flex flex-wrap justify-between gap-x-4 py-3">
+                <dt class="text-body font-medium text-ink">{i.idioma}</dt>
+                <dd class="text-body text-ink-muted">{i.nivel}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </div>
+</Seccion>

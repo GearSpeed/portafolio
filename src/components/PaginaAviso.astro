@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Icono from './Icono.astro';
+
+interface Props {
+  tituloPagina: string;
+  etiqueta: string;
+  titulo: string;
+  texto: string;
+  error?: boolean;
+}
+
+const { tituloPagina, etiqueta, titulo, texto, error = false } = Astro.props;
+---
+
+<Base titulo={tituloPagina} descripcion={texto}>
+  <meta slot="head" name="robots" content="noindex" />
+  <section class="mx-auto flex min-h-[70dvh] max-w-3xl flex-col items-start justify-center gap-5 px-4 py-20 md:px-8">
+    <p class:list={['rotulo tracking-widest', error && 'text-danger']}>{etiqueta}</p>
+    <h1 class="text-display-sm font-bold">{titulo}</h1>
+    <p class="text-lead text-ink-muted">{texto}</p>
+    <slot />
+    <a href="/" class="btn btn-primario mt-4">
+      <Icono nombre="arrow-left" tamano={16} /> Volver al inicio
+    </a>
+  </section>
+</Base>
