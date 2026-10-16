@@ -2,5 +2,4 @@
 # En producción van en Worker → Settings → Variables and Secrets.
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 RESEND_API_KEY=
-CONTACTO_DESTINO=omar.1993.ds@hotmail.com
-CONTACTO_REMITENTE=Portafolio <contacto@omarsampayo.dev>
+# CONTACTO_DESTINO y CONTACTO_REMITENTE vienen de `vars` en wrangler.jsonc.

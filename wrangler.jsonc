@@ -13,5 +13,12 @@
     // Solo el formulario ejecuta código; el resto se sirve como archivo estático.
     "run_worker_first": ["/api/*"],
   },
+  // Variables públicas del formulario. Las claves (TURNSTILE_SECRET_KEY, RESEND_API_KEY) van
+  // como *Secret* en el panel: `wrangler deploy` conserva los secretos pero borra las
+  // variables de texto creadas a mano, por eso estas viven aquí.
+  "vars": {
+    "CONTACTO_DESTINO": "omar.1993.ds@hotmail.com",
+    "CONTACTO_REMITENTE": "Portafolio <contacto@omarsampayo.dev>",
+  },
   "observability": { "enabled": true },
 }

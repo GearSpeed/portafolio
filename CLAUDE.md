@@ -36,7 +36,7 @@ npm test                 # ambas
   - `wrangler.jsonc` sirve `dist/` como archivos estáticos y solo manda `/api/*` al Worker (`run_worker_first`), así que las visitas no consumen ejecuciones. `worker/index.ts` enruta `POST /api/contacto` a `responderContacto` (`worker/contacto.ts`) y deja el resto a `env.ASSETS`, que responde con `404.html`. El `name` del config debe coincidir con el Worker en Cloudflare.
   - `worker/` no lo compila Astro: está excluido de `tsconfig.json` y se prueba importándolo directo desde `tests/` (Node 24 ejecuta TypeScript). Las E2E usan `astro preview`, que no tiene la función; por eso `/api/contacto` se simula en ellas con `page.route`.
   - La función valida los campos y la trampa para bots, verifica Turnstile y envía el correo con Resend.
-  - Variables de ejecución del Worker: `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `CONTACTO_DESTINO` y `CONTACTO_REMITENTE` (ver `.dev.vars.example`). `PUBLIC_TURNSTILE_SITE_KEY` es variable de build, no de ejecución.
+  - Variables de ejecución del Worker: `TURNSTILE_SECRET_KEY` y `RESEND_API_KEY` son *Secret* en el panel de Cloudflare; `CONTACTO_DESTINO` y `CONTACTO_REMITENTE` viven en `vars` de `wrangler.jsonc`, porque `wrangler deploy` borra las variables de texto creadas en el panel. `PUBLIC_TURNSTILE_SITE_KEY` es variable de build, no de ejecución.
   - Si falta `PUBLIC_TURNSTILE_SITE_KEY`: en `astro dev` se usa la clave de pruebas de Turnstile; en un build de producción el formulario se sustituye por un aviso con el correo, para que nunca se publique el widget «Solo para pruebas».
 - **CSP estricta.** `public/_headers` (Workers static assets lo aplica igual que Pages) solo permite scripts propios y los de Cloudflare (Turnstile y Web Analytics). Por eso `vite.build.assetsInlineLimit: 0` en `astro.config.mjs`. No agregues `<script is:inline>` ni scripts o estilos de terceros sin actualizar la CSP.
 - **`compressHTML: false` es intencional.** La compresión borraba el espacio entre texto y etiquetas en línea.
@@ -66,7 +66,7 @@ npm test                 # ambas
 ## Limites
 - Solicitar VoBo: siempre que se aplique un cambio nuevo se debe slicitar VoBo para mandar a producción, nunca asumir que todo cumple y deployarlo sin un VoBo humano.
 - Siempre actualiza MEMORY.md al terminar cada tarea
-- Nunca commites información delicada del proyecto (llaves, .env, etc.)
+- Nunca commites información delicada del proyecto (llaves, .env, credenciales, etc.)
 
 ## Git
 

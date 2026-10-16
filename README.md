@@ -52,13 +52,11 @@ El sitio es un Worker con *static assets*: Cloudflare sirve `dist/` directamente
 3. **Turnstile.** Cloudflare → Turnstile → Add widget, con dominio `omarsampayo.dev` y modo *Managed*.
    - Clave del sitio → **`PUBLIC_TURNSTILE_SITE_KEY`** como variable **de build** (Worker → Settings → Build → Variables and secrets) y en GitHub → Settings → Variables, para la CI. Se incrusta en el HTML al compilar.
    - Clave secreta → secreto **`TURNSTILE_SECRET_KEY`** en Worker → Settings → Variables and Secrets (variables de ejecución).
-4. **Resend.** Crear cuenta, agregar el dominio `omarsampayo.dev` y copiar en Cloudflare DNS los registros que indique (SPF, DKIM). Luego, en Worker → Settings → Variables and Secrets:
-   - `RESEND_API_KEY`: la clave de la API (tipo *Secret*).
-   - `CONTACTO_DESTINO`: `omar.1993.ds@hotmail.com`
-   - `CONTACTO_REMITENTE`: `Portafolio <contacto@omarsampayo.dev>`
+4. **Resend.** Crear cuenta, agregar el dominio `omarsampayo.dev` y copiar en Cloudflare DNS los registros que indique (DKIM y los del subdominio `send`). Crear una API key con permiso de envío y guardarla en Worker → Settings → Variables and Secrets como **`RESEND_API_KEY`**, tipo *Secret*.
+   - `CONTACTO_DESTINO` y `CONTACTO_REMITENTE` ya están en `wrangler.jsonc` (`vars`). No se capturan en el panel: `wrangler deploy` borra las variables de texto creadas a mano y solo conserva los secretos.
 5. **Analítica (opcional).** Zona `omarsampayo.dev` → Analytics & Logs → Web Analytics. No usa cookies y la CSP ya la permite.
 
-Sin las variables del paso 4, el formulario responde «no disponible» y sugiere escribir por correo; el resto del sitio funciona igual.
+Sin `RESEND_API_KEY`, el formulario responde «no disponible» y sugiere escribir por correo; el resto del sitio funciona igual.
 
 **Costo.** En el plan gratuito, los archivos estáticos no tienen límite y el Worker admite 100,000 ejecuciones al día; solo el formulario las consume. Si se rebasan, las peticiones extra fallan ese día, sin cargos.
 
