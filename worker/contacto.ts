@@ -47,8 +47,10 @@ async function verificarTurnstile(token: string, secreto: string, ip: string | n
 }
 
 async function procesar(request: Request, env: Entorno): Promise<Resultado> {
-  if (!env.TURNSTILE_SECRET_KEY || !env.RESEND_API_KEY || !env.CONTACTO_DESTINO || !env.CONTACTO_REMITENTE) {
-    console.error('[contacto] Faltan variables de entorno');
+  // Solo los nombres van al registro (Observability), nunca los valores.
+  const faltantes = (['TURNSTILE_SECRET_KEY', 'RESEND_API_KEY', 'CONTACTO_DESTINO', 'CONTACTO_REMITENTE'] as const).filter((n) => !env[n]);
+  if (faltantes.length > 0 || !env.TURNSTILE_SECRET_KEY || !env.RESEND_API_KEY || !env.CONTACTO_DESTINO || !env.CONTACTO_REMITENTE) {
+    console.error(`[contacto] Faltan variables de entorno: ${faltantes.join(', ')}`);
     return { ok: false, estado: 503, mensaje: 'El formulario no está disponible ahora. Escríbeme directo por correo.' };
   }
 
