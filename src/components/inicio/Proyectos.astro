@@ -40,13 +40,14 @@ const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
         <li data-categoria={data.categoria}>
           <article class="card group relative flex h-full flex-col overflow-hidden transition-colors hover:border-line-strong">
             <div class="relative h-52 overflow-hidden border-b border-line bg-elevated">
-              {/* Monocromo por defecto; el color aparece al pasar el cursor (DESIGN.md). */}
+              {/* Monocromo por defecto; el color aparece al pasar el cursor o, en celular y tableta,
+                  cuando la tarjeta cruza la franja central de la pantalla (data-en-foco). */}
               <Image
                 src={data.portada}
                 alt={data.portadaAlt}
                 widths={[480, 800, 1200]}
                 sizes="(min-width: 1280px) 368px, (min-width: 768px) 50vw, 100vw"
-                class="size-full object-cover object-top contrast-110 grayscale transition-[filter] duration-500 group-hover:grayscale-0"
+                class="size-full object-cover object-top contrast-110 grayscale transition-[filter] duration-500 group-hover:grayscale-0 max-md:group-data-en-foco:grayscale-0 [@media(hover:none)]:group-data-en-foco:grayscale-0"
               />
               <span class="rotulo absolute top-4 left-4 rounded-sm border border-line bg-canvas/85 px-2 py-0.5" aria-hidden="true">{data.sector}</span>
             </div>
@@ -102,6 +103,16 @@ const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
   const estado = document.querySelector<HTMLElement>('[data-filtros-estado]');
 
   if (contenedor) contenedor.hidden = false;
+
+  // En pantallas sin cursor no hay hover: la imagen toma color mientras la tarjeta cruza la
+  // franja central de la pantalla y vuelve a blanco y negro al salir. Se marca siempre y el CSS
+  // lo aplica en pantallas angostas (una columna) o sin cursor (tabletas), aunque el modo cambie
+  // sin recargar.
+  const observador = new IntersectionObserver(
+    (entradas) => entradas.forEach((e) => e.target.toggleAttribute('data-en-foco', e.isIntersecting)),
+    { rootMargin: '-35% 0px -35% 0px' },
+  );
+  document.querySelectorAll('#proyectos article').forEach((tarjeta) => observador.observe(tarjeta));
 
   botones.forEach((boton) => {
     boton.addEventListener('click', () => {

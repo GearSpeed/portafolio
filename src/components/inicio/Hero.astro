@@ -22,7 +22,7 @@ const enlaces = [
     La foto va encima del logo. Si la foto no carga, un <img> con alt vacío no pinta nada
     y queda a la vista el logo de abajo, sin depender de JavaScript.
   -->
-  <div class="group mb-6 size-28 rounded-full border border-line-strong bg-elevated p-1 md:size-32">
+  <div class="mb-6 size-28 rounded-full border border-line-strong bg-elevated p-1 md:size-32">
     <div class="relative size-full overflow-hidden rounded-full">
       <img src="/img/monograma-256.webp" alt="" width="128" height="128" class="absolute inset-0 size-full" data-respaldo />
       <Image
@@ -32,7 +32,7 @@ const enlaces = [
         height={256}
         loading="eager"
         fetchpriority="high"
-        class="relative size-full object-cover contrast-110 grayscale transition-[filter] duration-500 group-hover:grayscale-0"
+        class="relative size-full object-cover contrast-110 animate-a-color"
         data-foto
       />
     </div>

@@ -81,6 +81,25 @@ test('los filtros muestran solo los proyectos de la categoría elegida', async (
   await expect(tarjetas.filter({ visible: true })).toHaveCount(total);
 });
 
+test('en móvil, la imagen del proyecto toma color al cruzar el centro de la pantalla', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'En escritorio el color aparece con el cursor');
+  await page.goto('/');
+  const tarjeta = page.locator('#proyectos article').nth(2);
+  const filtro = () => tarjeta.locator('img').evaluate((img) => getComputedStyle(img).filter);
+
+  // Fuera de la franja central: blanco y negro.
+  expect(await filtro()).toContain('grayscale(1)');
+
+  // Centrada en la pantalla: a color.
+  await tarjeta.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(tarjeta).toHaveAttribute('data-en-foco', '');
+  await expect.poll(filtro).toContain('grayscale(0)');
+
+  // De vuelta arriba: otra vez en blanco y negro.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(tarjeta).not.toHaveAttribute('data-en-foco');
+});
+
 test('la foto de perfil se ve y, si no carga, queda el logo', async ({ page }) => {
   await page.goto('/');
   const foto = page.locator('#inicio img[data-foto]');

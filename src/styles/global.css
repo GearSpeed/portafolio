@@ -57,6 +57,17 @@
   --radius-card: 1rem;
 
   --shadow-pop: 0 8px 32px rgb(0 0 0 / 0.8);
+
+  /* Foto de perfil: entra en blanco y negro y pasa sola a color. */
+  --animate-a-color: a-color 1.2s ease-out 0.5s both;
+  @keyframes a-color {
+    from {
+      filter: contrast(1.1) grayscale(1);
+    }
+    to {
+      filter: contrast(1.1) grayscale(0);
+    }
+  }
 }
 
 @layer base {
