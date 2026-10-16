@@ -64,7 +64,7 @@ npm test                 # ambas
 - Haz solo lo que se te pide; No añadas funcionalidades por tu cuenta.
 
 ## Limites
-- Solicitar VoBo: siempre que se aplique un cambio nuevo se debe slicitar VoBo para mandar a producción, nunca asumir que todo cumple y deployarlo sin un VoBo humano.
+- Solicitar VoBo: siempre que se aplique un cambio nuevo se debe solicitar VoBo para mandar a producción, nunca asumir que todo cumple y deployarlo sin un VoBo humano.
 - Siempre actualiza MEMORY.md al terminar cada tarea
 - Nunca commites información delicada del proyecto (llaves, .env, credenciales, etc.)
 
