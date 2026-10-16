@@ -36,7 +36,7 @@ stack:
   - Vitest
   - Testcontainers
   - Playwright
-portada: ../../assets/proyectos/una-vez-mas.png
+portada: ../../assets/proyectos/una-vez-mas.webp
 portadaAlt: Pantalla de inicio del sistema de gestión de Una vez más, con accesos rápidos, resumen de ventas y productos por agotarse; las cifras están ocultas.
 descripcionSeo: Caso de estudio de Una vez más, un sistema de inventario, ventas y finanzas en producción para un negocio real de repostería. Angular 22, NestJS, PostgreSQL y Cloudflare.
 ---

@@ -4,7 +4,7 @@ import Encabezado from '../components/Encabezado.astro';
 import Pie from '../components/Pie.astro';
 import { getImage } from 'astro:assets';
 import { perfil } from '../data/sitio';
-import foto from '../assets/foto-omar.jpg';
+import foto from '../assets/foto-omar.webp';
 
 interface Props {
   titulo: string;
@@ -15,7 +15,7 @@ interface Props {
 const { titulo, descripcion, tipo = 'website' } = Astro.props;
 const canonica = new URL(Astro.url.pathname, Astro.site);
 const imagenOg = new URL('/img/og.png', Astro.site);
-const fotoPerfil = await getImage({ src: foto, width: 512, format: 'jpeg' });
+const fotoPerfil = await getImage({ src: foto, width: 512, format: 'webp' });
 
 // [x %, y %, radio, opacidad]
 const estrellas = [

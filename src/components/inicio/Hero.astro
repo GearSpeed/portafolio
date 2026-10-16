@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Icono from '../Icono.astro';
-import foto from '../../assets/foto-omar.jpg';
+import foto from '../../assets/foto-omar.webp';
 import { perfil } from '../../data/sitio';
 
 const enlaces = [
@@ -10,11 +10,14 @@ const enlaces = [
   { href: `mailto:${perfil.correo}`, icono: 'mail', texto: perfil.correo, externo: false },
   { href: perfil.cv, icono: 'file-text', texto: 'CV (PDF)', externo: false, descarga: true },
 ];
+
+// «Dev» va en azul dentro del nombre.
+const [nombre, apellido] = perfil.nombre.split(' Dev ');
 ---
 
 <section id="inicio" class="mx-auto flex w-full max-w-7xl flex-col items-center px-4 pt-16 text-center md:px-8 md:pt-24 lg:px-16">
   <p class="mb-10 inline-flex items-center gap-2 rounded-full border border-line bg-elevated px-3 py-1">
-    <span class="size-2 rounded-full bg-ink motion-safe:animate-pulse" aria-hidden="true"></span>
+    <span class="size-2 rounded-full bg-disponible motion-safe:animate-pulse" aria-hidden="true"></span>
     <span class="rotulo tracking-widest">{perfil.disponibilidad}</span>
   </p>
 
@@ -38,7 +41,7 @@ const enlaces = [
     </div>
   </div>
 
-  <h1 class="max-w-4xl text-display-sm font-bold md:text-display">{perfil.nombre}</h1>
+  <h1 class="max-w-4xl text-display-sm font-bold md:text-display">{nombre} <span class="text-acento">Dev</span> {apellido}</h1>
   <p class="mt-2 text-h4 font-normal text-ink-muted">{perfil.rol} · {perfil.rolIA}</p>
   <p class="mt-4 max-w-2xl text-lead text-ink-soft">{perfil.lema}</p>
 

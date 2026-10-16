@@ -32,7 +32,7 @@ stack:
   - MariaDB
   - AWS EC2
   - Apache
-portada: ../../assets/proyectos/plataforma-educacion-financiera-honduras.png
+portada: ../../assets/proyectos/plataforma-educacion-financiera-honduras.webp
 portadaAlt: Portada pública de la plataforma de educación financiera en Honduras, con su oferta de cursos de finanzas personales en línea.
 descripcionSeo: Plataforma de educación financiera de Banco Azteca en Honduras. Panel en NestJS y Angular, diagnóstico de un sistema heredado y un requisito de la CNBS.
 ---

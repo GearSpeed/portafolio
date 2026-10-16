@@ -33,7 +33,7 @@ stack:
   - Bash
   - systemd
   - YouTube Data API
-portada: ../../assets/proyectos/retazos-de-historia.png
+portada: ../../assets/proyectos/retazos-de-historia.webp
 portadaAlt: Canal de YouTube Retazos de Historia, con su portada y los videos más recientes.
 descripcionSeo: Caso de estudio de Retazos de Historia, un pipeline de video con IA que orquesta Claude, ElevenLabs, OpenAI, n8n, Remotion y la YouTube Data API.
 ---

@@ -40,7 +40,7 @@ npm test                 # ambas
   - Si falta `PUBLIC_TURNSTILE_SITE_KEY`: en `astro dev` se usa la clave de pruebas de Turnstile; en un build de producción el formulario se sustituye por un aviso con el correo, para que nunca se publique el widget «Solo para pruebas».
 - **CSP estricta.** `public/_headers` (Workers static assets lo aplica igual que Pages) solo permite scripts propios y los de Cloudflare (Turnstile y Web Analytics). Por eso `vite.build.assetsInlineLimit: 0` en `astro.config.mjs`. No agregues `<script is:inline>` ni scripts o estilos de terceros sin actualizar la CSP.
 - **`compressHTML: false` es intencional.** La compresión borraba el espacio entre texto y etiquetas en línea.
-- **Sistema de diseño «Monochrome Editorial».** Paleta acromática y una sola fuente (Inter); la jerarquía sale de la escala tipográfica y del espacio, sin destellos, degradados ni colores de acento.
+- **Sistema de diseño «Monochrome Editorial».** Paleta acromática y una sola fuente (Inter); la jerarquía sale de la escala tipográfica y del espacio, sin destellos ni degradados. Los únicos acentos de color son los que pidió Omar: `disponible` (verde, el punto de «Disponible para remoto») y `acento` (azul, «Dev» en el nombre de la portada).
   - Los tokens están en el bloque `@theme` de `src/styles/global.css`: colores `canvas`, `surface`, `elevated`, `line`, `line-strong`, `ink`, `ink-soft`, `ink-muted` e `ink-faint`, y escalas como `text-h3`, `text-label` o `text-overline`. Usa esas clases, no colores hex sueltos.
   - Clases de componente en la misma hoja: `.card`, `.rotulo` (rótulo en mayúsculas), `.chip`, `.btn` con `.btn-primario`/`.btn-secundario`, `.campo` y `.prose-caso`. El rótulo no se llama `overline` porque Tailwind ya tiene esa utilidad (`text-decoration: overline`).
   - `ink-faint` (#555) no llega a 4.5:1 sobre negro: úsalo solo en adornos, nunca en texto.
@@ -55,7 +55,8 @@ npm test                 # ambas
   - Sí se pueden nombrar Grupo Salinas, Banco Azteca, CNBS, UCENM y UCRISH.
   - La lista `terminosDeClientes` de `e2e/sitio.spec.ts` revisa el HTML de cada ruta. Si agregas una página, agrégala también a `rutas`.
 - **Capturas de pantalla** (`src/assets/proyectos/`, campo `portada` del Markdown): las que se publican ya van editadas. Antes de agregar una nueva, pixela el nombre del proyecto del cliente, las cifras privadas del negocio (ventas, utilidad, existencias) y los datos personales, como nombres de empleados o la cuenta personal de YouTube. La prueba de términos prohibidos no revisa imágenes.
-- **Foto de perfil** (`src/assets/foto-omar.jpg`): en la presentación va encima del logo (`public/img/monograma-256.webp`). Si la foto no carga, queda a la vista el logo, sin JavaScript; una prueba E2E bloquea la foto para comprobarlo.
+- **Imágenes siempre en `.webp`**, para mantener el sitio ligero. Toda imagen nueva se convierte antes de agregarla (por ejemplo con `sharp`, que ya viene con Astro; calidad 82–90) y se reduce al tamaño que de verdad se muestra. `getImage` también pide `format: 'webp'`. Únicas excepciones, por compatibilidad: `public/img/og.png` (LinkedIn y otras redes no muestran la vista previa en WebP), `favicon.ico`, `favicon-32.png` y `apple-touch-icon.png`.
+- **Foto de perfil** (`src/assets/foto-omar.webp`): en la presentación va encima del logo (`public/img/monograma-256.webp`). Si la foto no carga, queda a la vista el logo, sin JavaScript; una prueba E2E bloquea la foto para comprobarlo.
 - En IEECO (AWS), Omar *participó* en la arquitectura; no la implementó solo. No infles el rol en el trabajo de cliente.
 
 ## Forma de trabajar

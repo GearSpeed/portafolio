@@ -33,7 +33,7 @@ stack:
 enlaces:
   - texto: Visitar unavezmasmx.com
     href: https://www.unavezmasmx.com/
-portada: ../../assets/proyectos/una-vez-mas-sitio-web.png
+portada: ../../assets/proyectos/una-vez-mas-sitio-web.webp
 portadaAlt: Catálogo del sitio de Una vez más, con filtros por categoría, disponibilidad de cada producto y botones para pedir por WhatsApp.
 descripcionSeo: Caso de estudio del sitio de ventas de Una vez más. Angular 21 prerenderizado en Cloudflare Pages, catálogo en vivo, SEO técnico y checkout por WhatsApp.
 ---
