@@ -2,7 +2,9 @@
 import '../styles/global.css';
 import Encabezado from '../components/Encabezado.astro';
 import Pie from '../components/Pie.astro';
+import { getImage } from 'astro:assets';
 import { perfil } from '../data/sitio';
+import foto from '../assets/foto-omar.jpg';
 
 interface Props {
   titulo: string;
@@ -13,6 +15,7 @@ interface Props {
 const { titulo, descripcion, tipo = 'website' } = Astro.props;
 const canonica = new URL(Astro.url.pathname, Astro.site);
 const imagenOg = new URL('/img/og.png', Astro.site);
+const fotoPerfil = await getImage({ src: foto, width: 512, format: 'jpeg' });
 
 // [x %, y %, radio, opacidad]
 const estrellas = [
@@ -28,7 +31,7 @@ const personaJsonLd = {
   jobTitle: `${perfil.rol} · ${perfil.rolIA}`,
   email: `mailto:${perfil.correo}`,
   url: Astro.site?.toString(),
-  image: new URL('/img/monograma-256.webp', Astro.site).toString(),
+  image: new URL(fotoPerfil.src, Astro.site).toString(),
   address: { '@type': 'PostalAddress', addressLocality: 'Ciudad de México', addressCountry: 'MX' },
   sameAs: [perfil.github, perfil.linkedin],
   knowsAbout: ['Angular', 'NestJS', 'Laravel', 'PostgreSQL', 'AWS', 'Cloudflare', 'Automatización con IA'],

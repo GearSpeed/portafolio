@@ -36,6 +36,8 @@ stack:
   - Vitest
   - Testcontainers
   - Playwright
+portada: ../../assets/proyectos/una-vez-mas.png
+portadaAlt: Pantalla de inicio del sistema de gestión de Una vez más, con accesos rápidos, resumen de ventas y productos por agotarse; las cifras están ocultas.
 descripcionSeo: Caso de estudio de Una vez más, un sistema de inventario, ventas y finanzas en producción para un negocio real de repostería. Angular 22, NestJS, PostgreSQL y Cloudflare.
 ---
 
@@ -57,7 +59,7 @@ Lo diseñé, construí, desplegué y lo opero. El primer commit es del 21 de sep
 - **Finanzas**: gastos por categoría, aportaciones y retiros de socios contados aparte de la utilidad, estado de resultados y «Dónde está el dinero», el saldo por bolsa.
 - **Reportes** por día, producto, vendedora, canal y método de pago; corte de caja; simulador de precio; exportación a CSV y a Excel con gráficas.
 - **Catálogo con IA**: fotos procesadas en el servidor (redimensionadas y sin metadatos GPS) y fichas de producto generadas con la API de OpenAI.
-- **Sitio web público** alimentado por una API de solo lectura y cacheada, que publica la disponibilidad (disponible, últimas piezas, agotado), nunca las existencias exactas.
+- **[Sitio web público](/proyectos/una-vez-mas-sitio-web/)** alimentado por una API de solo lectura y cacheada, que publica la disponibilidad (disponible, últimas piezas, agotado), nunca las existencias exactas.
 
 ## Un modelo contable correcto
 

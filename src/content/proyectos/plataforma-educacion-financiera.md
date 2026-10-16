@@ -33,6 +33,8 @@ stack:
   - AWS
   - Cloudflare
   - Docker Compose
+portada: ../../assets/proyectos/plataforma-educacion-financiera.png
+portadaAlt: Portada pública de la plataforma de educación financiera de Banco Azteca en México, con la invitación a registrarse al diplomado.
 descripcionSeo: Caso de estudio de la plataforma de educación financiera de Banco Azteca. Panel administrativo en Filament, métricas, informes y despliegue en Guatemala.
 ---
 

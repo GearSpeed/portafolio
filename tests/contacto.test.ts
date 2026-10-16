@@ -4,7 +4,7 @@
  */
 import { afterEach, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { onRequestPost } from '../functions/api/contacto.ts';
+import { responderContacto } from '../worker/contacto.ts';
 
 const env = {
   TURNSTILE_SECRET_KEY: 'secreto',
@@ -54,7 +54,7 @@ const validos = {
 
 describe('POST /api/contacto', () => {
   it('envía el correo con «responder a» del visitante', async () => {
-    const respuesta = await onRequestPost({ request: solicitud(validos), env });
+    const respuesta = await responderContacto(solicitud(validos), env);
     assert.equal(respuesta.status, 200);
     assert.deepEqual(await respuesta.json(), { ok: true, mensaje: 'Mensaje enviado.' });
 
@@ -66,7 +66,7 @@ describe('POST /api/contacto', () => {
   });
 
   it('escapa el HTML del mensaje', async () => {
-    await onRequestPost({ request: solicitud({ ...validos, mensaje: '<script>alert(1)</script> hola' }), env });
+    await responderContacto(solicitud({ ...validos, mensaje: '<script>alert(1)</script> hola' }), env);
     const datos = JSON.parse(String(llamadas.find((l) => l.url.includes('resend'))?.init?.body));
     assert.ok(!datos.html.includes('<script>'));
     assert.ok(datos.html.includes('&lt;script&gt;'));
@@ -74,7 +74,7 @@ describe('POST /api/contacto', () => {
 
   it('incluye el tipo de proyecto en el asunto, en una sola línea y recortado', async () => {
     const tipo = 'Oferta de empleo\r\nBcc: otro@ejemplo.com ' + 'x'.repeat(200);
-    await onRequestPost({ request: solicitud({ ...validos, tipo }), env });
+    await responderContacto(solicitud({ ...validos, tipo }), env);
     const datos = JSON.parse(String(llamadas.find((l) => l.url.includes('resend'))?.init?.body));
     assert.ok(datos.subject.startsWith('Portafolio · Oferta de empleo Bcc: otro@ejemplo.com x'));
     assert.ok(!/[\r\n]/.test(datos.subject));
@@ -82,46 +82,46 @@ describe('POST /api/contacto', () => {
   });
 
   it('rechaza un correo inválido sin llamar a servicios externos', async () => {
-    const respuesta = await onRequestPost({ request: solicitud({ ...validos, correo: 'no-es-correo' }), env });
+    const respuesta = await responderContacto(solicitud({ ...validos, correo: 'no-es-correo' }), env);
     assert.equal(respuesta.status, 422);
     assert.equal(llamadas.length, 0);
   });
 
   it('rechaza un mensaje demasiado corto', async () => {
-    const respuesta = await onRequestPost({ request: solicitud({ ...validos, mensaje: 'hola' }), env });
+    const respuesta = await responderContacto(solicitud({ ...validos, mensaje: 'hola' }), env);
     assert.equal(respuesta.status, 422);
   });
 
   it('rechaza si Turnstile no valida y no envía correo', async () => {
     turnstileOk = false;
-    const respuesta = await onRequestPost({ request: solicitud(validos), env });
+    const respuesta = await responderContacto(solicitud(validos), env);
     assert.equal(respuesta.status, 403);
     assert.ok(!llamadas.some((l) => l.url.includes('resend')));
   });
 
   it('finge éxito ante la trampa para bots sin enviar nada', async () => {
-    const respuesta = await onRequestPost({ request: solicitud({ ...validos, sitio_web: 'http://spam' }), env });
+    const respuesta = await responderContacto(solicitud({ ...validos, sitio_web: 'http://spam' }), env);
     assert.equal(respuesta.status, 200);
     assert.equal(llamadas.length, 0);
   });
 
   it('responde 502 si Resend falla', async () => {
     resendOk = false;
-    const respuesta = await onRequestPost({ request: solicitud(validos), env });
+    const respuesta = await responderContacto(solicitud(validos), env);
     assert.equal(respuesta.status, 502);
   });
 
   it('responde 503 si faltan variables de entorno', async () => {
-    const respuesta = await onRequestPost({ request: solicitud(validos), env: {} });
+    const respuesta = await responderContacto(solicitud(validos), {});
     assert.equal(respuesta.status, 503);
   });
 
   it('sin JavaScript redirige a la página de confirmación o de error', async () => {
-    const ok = await onRequestPost({ request: solicitud(validos, false), env });
+    const ok = await responderContacto(solicitud(validos, false), env);
     assert.equal(ok.status, 303);
     assert.equal(ok.headers.get('Location'), 'https://omarsampayo.dev/contacto/enviado/');
 
-    const error = await onRequestPost({ request: solicitud({ ...validos, correo: 'x' }, false), env });
+    const error = await responderContacto(solicitud({ ...validos, correo: 'x' }, false), env);
     assert.equal(error.headers.get('Location'), 'https://omarsampayo.dev/contacto/error/');
   });
 });

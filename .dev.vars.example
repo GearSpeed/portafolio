@@ -1,5 +1,5 @@
-# Secretos de la función /api/contacto para `wrangler pages dev` (copiar a .dev.vars).
-# En producción van en Cloudflare Pages → Settings → Variables and Secrets.
+# Secretos de la función /api/contacto para `wrangler dev` (copiar a .dev.vars).
+# En producción van en Worker → Settings → Variables and Secrets.
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 RESEND_API_KEY=
 CONTACTO_DESTINO=omar.1993.ds@hotmail.com

@@ -1,5 +1,5 @@
 /**
- * Cloudflare Pages Function: POST /api/contacto
+ * POST /api/contacto. Lo llama el Worker (worker/index.ts); el resto del sitio son archivos estáticos.
  *
  * 1. Valida los campos y la trampa para bots.
  * 2. Verifica el token de Turnstile contra Cloudflare.
@@ -8,23 +8,18 @@
  * Responde JSON si el cliente lo pide (envío con fetch) y, si no, redirige a
  * /contacto/enviado/ o /contacto/error/ para que el formulario funcione sin JavaScript.
  *
- * Variables de entorno (Cloudflare Pages → Settings → Variables and Secrets):
+ * Variables de entorno (Worker → Settings → Variables and Secrets):
  *   TURNSTILE_SECRET_KEY  secreto de Turnstile
  *   RESEND_API_KEY        clave de la API de Resend
  *   CONTACTO_DESTINO      correo que recibe los mensajes
  *   CONTACTO_REMITENTE    remitente verificado en Resend, p. ej. "Portafolio <contacto@omarsampayo.dev>"
  */
 
-interface Entorno {
+export interface Entorno {
   TURNSTILE_SECRET_KEY?: string;
   RESEND_API_KEY?: string;
   CONTACTO_DESTINO?: string;
   CONTACTO_REMITENTE?: string;
-}
-
-interface Contexto {
-  request: Request;
-  env: Entorno;
 }
 
 type Resultado = { ok: true } | { ok: false; estado: number; mensaje: string };
@@ -105,7 +100,7 @@ async function procesar(request: Request, env: Entorno): Promise<Resultado> {
   return { ok: true };
 }
 
-export async function onRequestPost({ request, env }: Contexto): Promise<Response> {
+export async function responderContacto(request: Request, env: Entorno): Promise<Response> {
   const resultado = await procesar(request, env);
   const quiereJson = (request.headers.get('Accept') ?? '').includes('application/json');
 

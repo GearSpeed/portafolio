@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Seccion from '../Seccion.astro';
 import { categoriasProyecto } from '../../data/sitio';
 
@@ -12,7 +13,7 @@ const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
   numero="02"
   etiqueta="Portafolio"
   titulo="Proyectos seleccionados"
-  intro="Una plataforma bancaria en tres países, un sistema de ventas en uso diario y un pipeline de video con IA."
+  intro="Una plataforma bancaria en tres países, un sistema de ventas en uso diario con su sitio web y un pipeline de video con IA."
 >
   <!-- Los filtros solo se muestran con JavaScript; sin él se ven todos los proyectos. -->
   <div class="mb-6 flex flex-wrap items-center gap-3" data-filtros hidden>
@@ -33,18 +34,21 @@ const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
     <p class="sr-only" role="status" aria-live="polite" data-filtros-estado></p>
   </div>
 
-  <ul class="grid grid-cols-1 gap-6 md:grid-cols-2">
+  <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
     {
       proyectos.map(({ id, data }) => (
         <li data-categoria={data.categoria}>
           <article class="card group relative flex h-full flex-col overflow-hidden transition-colors hover:border-line-strong">
-            <div
-              class="relative flex h-52 flex-col justify-end border-b border-line bg-elevated bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:32px_32px] p-6"
-              aria-hidden="true"
-            >
-              <span class="rotulo absolute top-4 left-4 rounded-sm border border-line bg-canvas/80 px-2 py-0.5">{data.sector}</span>
-              <span class="text-display-sm font-bold text-ink-soft transition-colors group-hover:text-ink">{data.cifras[0].valor}</span>
-              <span class="mt-1 max-w-xs text-small text-ink-muted">{data.cifras[0].etiqueta}</span>
+            <div class="relative h-52 overflow-hidden border-b border-line bg-elevated">
+              {/* Monocromo por defecto; el color aparece al pasar el cursor (DESIGN.md). */}
+              <Image
+                src={data.portada}
+                alt={data.portadaAlt}
+                widths={[480, 800, 1200]}
+                sizes="(min-width: 1280px) 368px, (min-width: 768px) 50vw, 100vw"
+                class="size-full object-cover object-top contrast-110 grayscale transition-[filter] duration-500 group-hover:grayscale-0"
+              />
+              <span class="rotulo absolute top-4 left-4 rounded-sm border border-line bg-canvas/85 px-2 py-0.5" aria-hidden="true">{data.sector}</span>
             </div>
 
             <div class="flex flex-1 flex-col justify-between gap-6 p-6">

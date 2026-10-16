@@ -8,7 +8,7 @@ periodo: Oct 2026 – hoy
 estado: Publicando
 categoria: ia
 sector: IA · Automatización
-orden: 4
+orden: 5
 destacado: false
 resumen: Un canal de YouTube de curiosidades históricas producido casi por completo de forma automática. Diseñé el pipeline que investiga, narra, ilustra, renderiza y publica.
 problema: Publicar un video largo y tres Shorts al día, bien investigados y con fuentes, sin dedicarle horas de edición ni un presupuesto alto.
@@ -33,6 +33,8 @@ stack:
   - Bash
   - systemd
   - YouTube Data API
+portada: ../../assets/proyectos/retazos-de-historia.png
+portadaAlt: Canal de YouTube Retazos de Historia, con su portada y los videos más recientes.
 descripcionSeo: Caso de estudio de Retazos de Historia, un pipeline de video con IA que orquesta Claude, ElevenLabs, OpenAI, n8n, Remotion y la YouTube Data API.
 ---
 

@@ -6,6 +6,7 @@ const rutas = [
   '/proyectos/plataforma-educacion-financiera/',
   '/proyectos/plataforma-educacion-financiera-honduras/',
   '/proyectos/una-vez-mas/',
+  '/proyectos/una-vez-mas-sitio-web/',
   '/proyectos/retazos-de-historia/',
   '/contacto/enviado/',
   '/contacto/error/',
@@ -78,6 +79,20 @@ test('los filtros muestran solo los proyectos de la categoría elegida', async (
 
   await page.getByRole('button', { name: 'Todos' }).click();
   await expect(tarjetas.filter({ visible: true })).toHaveCount(total);
+});
+
+test('la foto de perfil se ve y, si no carga, queda el logo', async ({ page }) => {
+  await page.goto('/');
+  const foto = page.locator('#inicio img[data-foto]');
+  await expect(foto).toBeVisible();
+  expect(await foto.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+
+  await page.route('**/_astro/foto-omar*', (ruta) => ruta.abort());
+  await page.reload();
+  const respaldo = page.locator('#inicio img[data-respaldo]');
+  await expect(respaldo).toBeVisible();
+  expect(await respaldo.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+  expect(await page.locator('#inicio img[data-foto]').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(0);
 });
 
 test('el CV se puede descargar', async ({ request }) => {

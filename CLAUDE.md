@@ -2,14 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Portafolio personal de Omar Dev Sampayo (omarsampayo.dev): sitio estático en Astro 7 + Tailwind 4, desplegado en Cloudflare Pages, con una sola función de servidor para el formulario de contacto. Todo está en español: textos, identificadores, comentarios y mensajes de commit. Mantén ese idioma al escribir código nuevo.
+Portafolio personal de Omar Dev Sampayo (omarsampayo.dev): sitio estático en Astro 7 + Tailwind 4, desplegado como Cloudflare Worker con *static assets*, con una sola función de servidor para el formulario de contacto. Todo está en español: textos, identificadores, comentarios y mensajes de commit. Mantén ese idioma al escribir código nuevo.
 
 ## Comandos
 
 ```bash
 npm run dev              # http://127.0.0.1:4321
 npm run build            # astro check (tipos + esquema de contenido) y build en dist/
-npm run test:funciones   # node --test sobre tests/**/*.test.ts (función de contacto, fetch simulado)
+npm run test:funciones   # node --test sobre tests/**/*.test.ts (Worker y función de contacto, fetch simulado)
+npm run preview:worker   # build + wrangler dev en :8787: el sitio servido como en producción, con /api/contacto
 npm run test:e2e         # Playwright + axe; sirve dist/ con astro preview en el puerto 4322
 npm test                 # ambas
 ```
@@ -27,16 +28,17 @@ npm test                 # ambas
   - `src/data/sitio.ts` concentra todo el texto de la portada: perfil, navegación, métricas, experiencia, habilidades, educación, etc.
   - Los casos de estudio son la colección `proyectos` (`src/content/proyectos/*.md`), validada por el esquema Zod de `src/content.config.ts`.
   - Ese esquema impone límites de longitud (`resumen` ≤ 260, `problema`/`solucion`/`resultado` ≤ 220, `descripcionSeo` ≤ 170) y de 2 a 4 `cifras`; `astro build` falla si no se cumplen.
-  - El campo `orden` decide el orden de las tarjetas en la portada y el enlace al siguiente caso en `src/pages/proyectos/[id].astro`. `categoria` alimenta los filtros de la portada (etiquetas en `categoriasProyecto` de `sitio.ts`), y la primera de `cifras` se muestra grande en la portada de la tarjeta.
+  - El campo `orden` decide el orden de las tarjetas en la portada y el enlace al siguiente caso en `src/pages/proyectos/[id].astro`. `categoria` alimenta los filtros de la portada (etiquetas en `categoriasProyecto` de `sitio.ts`); `portada` (captura) es la imagen de la tarjeta y de la cabecera del caso.
   - La página de cada caso arma su índice lateral con los `##` del Markdown.
 - **Negritas en `sitio.ts`.** Los logros usan `**texto**`. `conNegritas` (`src/lib/texto.ts`) los escapa y los convierte en `<strong>`, y se renderizan con `set:html`. Todo texto que vaya a `set:html` debe pasar por ese escape.
 - **Formulario de contacto (mejora progresiva).**
   - `src/components/inicio/Contacto.astro` publica a `/api/contacto`. Con JavaScript usa `fetch` y pide JSON; sin JavaScript, la función responde con un 303 a `/contacto/enviado/` o `/contacto/error/`.
-  - La función `functions/api/contacto.ts` es una Cloudflare Pages Function que Astro no compila: está excluida de `tsconfig.json` y se prueba importándola directo desde `tests/` (Node 24 ejecuta TypeScript).
+  - `wrangler.jsonc` sirve `dist/` como archivos estáticos y solo manda `/api/*` al Worker (`run_worker_first`), así que las visitas no consumen ejecuciones. `worker/index.ts` enruta `POST /api/contacto` a `responderContacto` (`worker/contacto.ts`) y deja el resto a `env.ASSETS`, que responde con `404.html`. El `name` del config debe coincidir con el Worker en Cloudflare.
+  - `worker/` no lo compila Astro: está excluido de `tsconfig.json` y se prueba importándolo directo desde `tests/` (Node 24 ejecuta TypeScript). Las E2E usan `astro preview`, que no tiene la función; por eso `/api/contacto` se simula en ellas con `page.route`.
   - La función valida los campos y la trampa para bots, verifica Turnstile y envía el correo con Resend.
-  - Variables de servidor: `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `CONTACTO_DESTINO` y `CONTACTO_REMITENTE` (ver `.dev.vars.example`).
+  - Variables de ejecución del Worker: `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `CONTACTO_DESTINO` y `CONTACTO_REMITENTE` (ver `.dev.vars.example`). `PUBLIC_TURNSTILE_SITE_KEY` es variable de build, no de ejecución.
   - Si falta `PUBLIC_TURNSTILE_SITE_KEY`, el sitio usa la clave de pruebas de Turnstile.
-- **CSP estricta.** `public/_headers` solo permite scripts propios y los de Cloudflare (Turnstile y Web Analytics). Por eso `vite.build.assetsInlineLimit: 0` en `astro.config.mjs`. No agregues `<script is:inline>` ni scripts o estilos de terceros sin actualizar la CSP.
+- **CSP estricta.** `public/_headers` (Workers static assets lo aplica igual que Pages) solo permite scripts propios y los de Cloudflare (Turnstile y Web Analytics). Por eso `vite.build.assetsInlineLimit: 0` en `astro.config.mjs`. No agregues `<script is:inline>` ni scripts o estilos de terceros sin actualizar la CSP.
 - **`compressHTML: false` es intencional.** La compresión borraba el espacio entre texto y etiquetas en línea.
 - **Sistema de diseño «Monochrome Editorial».** Paleta acromática y una sola fuente (Inter); la jerarquía sale de la escala tipográfica y del espacio, sin destellos, degradados ni colores de acento.
   - Los tokens están en el bloque `@theme` de `src/styles/global.css`: colores `canvas`, `surface`, `elevated`, `line`, `line-strong`, `ink`, `ink-soft`, `ink-muted` e `ink-faint`, y escalas como `text-h3`, `text-label` o `text-overline`. Usa esas clases, no colores hex sueltos.
@@ -52,6 +54,8 @@ npm test                 # ambas
 - **Sistemas de clientes.** No se publica el nombre interno del proyecto de Banco Azteca: se llama «Plataforma de educación financiera». Tampoco se publica nada sobre cómo se accede a esos sistemas: rutas de administración, tipo de login o captcha, túneles, usuarios de base de datos, autenticación, topología de servidores ni controles de seguridad que falten.
   - Sí se pueden nombrar Grupo Salinas, Banco Azteca, CNBS, UCENM y UCRISH.
   - La lista `terminosDeClientes` de `e2e/sitio.spec.ts` revisa el HTML de cada ruta. Si agregas una página, agrégala también a `rutas`.
+- **Capturas de pantalla** (`src/assets/proyectos/`, campo `portada` del Markdown): las que se publican ya van editadas. Antes de agregar una nueva, pixela el nombre del proyecto del cliente, las cifras privadas del negocio (ventas, utilidad, existencias) y los datos personales, como nombres de empleados o la cuenta personal de YouTube. La prueba de términos prohibidos no revisa imágenes.
+- **Foto de perfil** (`src/assets/foto-omar.jpg`): en la presentación va encima del logo (`public/img/monograma-256.webp`). Si la foto no carga, queda a la vista el logo, sin JavaScript; una prueba E2E bloquea la foto para comprobarlo.
 - En IEECO (AWS), Omar *participó* en la arquitectura; no la implementó solo. No infles el rol en el trabajo de cliente.
 
 ## Git
