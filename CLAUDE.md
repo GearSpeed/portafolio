@@ -11,11 +11,11 @@ npm run dev              # http://127.0.0.1:4321
 npm run build            # astro check (tipos + esquema de contenido) y build en dist/
 npm run test:funciones   # node --test sobre tests/**/*.test.ts (Worker y función de contacto, fetch simulado)
 npm run preview:worker   # build + wrangler dev en :8787: el sitio servido como en producción, con /api/contacto
-npm run test:e2e         # Playwright + axe; sirve dist/ con astro preview en el puerto 4322
+npm run test:e2e         # Playwright + axe; compila y sirve dist/ con astro preview en el puerto 4322
 npm test                 # ambas
 ```
 
-- Las E2E prueban `dist/`, así que corre `npm run build` antes; si no, validan un build viejo.
+- Las E2E compilan solas (`webServer` de `playwright.config.ts`) con la clave de pruebas de Turnstile, y sobrescriben `dist/`. Fuera de CI reutilizan un servidor que ya esté en :4322, que puede estar sirviendo un build viejo.
 - Una sola prueba E2E: `npx playwright test -g "menú móvil" --project=movil`. Los proyectos son `escritorio` y `movil`.
 - Una sola prueba de la función: `node --test --test-name-pattern="Turnstile" tests/contacto.test.ts`.
 - En local no hay navegador de Playwright descargado. Usa `CHROME_BIN=$HOME/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome npx playwright test`, o instálalo con `npx playwright install chromium`.
@@ -37,7 +37,7 @@ npm test                 # ambas
   - `worker/` no lo compila Astro: está excluido de `tsconfig.json` y se prueba importándolo directo desde `tests/` (Node 24 ejecuta TypeScript). Las E2E usan `astro preview`, que no tiene la función; por eso `/api/contacto` se simula en ellas con `page.route`.
   - La función valida los campos y la trampa para bots, verifica Turnstile y envía el correo con Resend.
   - Variables de ejecución del Worker: `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `CONTACTO_DESTINO` y `CONTACTO_REMITENTE` (ver `.dev.vars.example`). `PUBLIC_TURNSTILE_SITE_KEY` es variable de build, no de ejecución.
-  - Si falta `PUBLIC_TURNSTILE_SITE_KEY`, el sitio usa la clave de pruebas de Turnstile.
+  - Si falta `PUBLIC_TURNSTILE_SITE_KEY`: en `astro dev` se usa la clave de pruebas de Turnstile; en un build de producción el formulario se sustituye por un aviso con el correo, para que nunca se publique el widget «Solo para pruebas».
 - **CSP estricta.** `public/_headers` (Workers static assets lo aplica igual que Pages) solo permite scripts propios y los de Cloudflare (Turnstile y Web Analytics). Por eso `vite.build.assetsInlineLimit: 0` en `astro.config.mjs`. No agregues `<script is:inline>` ni scripts o estilos de terceros sin actualizar la CSP.
 - **`compressHTML: false` es intencional.** La compresión borraba el espacio entre texto y etiquetas en línea.
 - **Sistema de diseño «Monochrome Editorial».** Paleta acromática y una sola fuente (Inter); la jerarquía sale de la escala tipográfica y del espacio, sin destellos, degradados ni colores de acento.
@@ -57,6 +57,16 @@ npm test                 # ambas
 - **Capturas de pantalla** (`src/assets/proyectos/`, campo `portada` del Markdown): las que se publican ya van editadas. Antes de agregar una nueva, pixela el nombre del proyecto del cliente, las cifras privadas del negocio (ventas, utilidad, existencias) y los datos personales, como nombres de empleados o la cuenta personal de YouTube. La prueba de términos prohibidos no revisa imágenes.
 - **Foto de perfil** (`src/assets/foto-omar.jpg`): en la presentación va encima del logo (`public/img/monograma-256.webp`). Si la foto no carga, queda a la vista el logo, sin JavaScript; una prueba E2E bloquea la foto para comprobarlo.
 - En IEECO (AWS), Omar *participó* en la arquitectura; no la implementó solo. No infles el rol en el trabajo de cliente.
+
+## Forma de trabajar
+- Cambios pequeños y enfocados; No reescribas lo que ya funciona
+- Al terminar, resume que has cambiado y cualquier decisión que deba revisar
+- Haz solo lo que se te pide; No añadas funcionalidades por tu cuenta.
+
+## Limites
+- Solicitar VoBo: siempre que se aplique un cambio nuevo se debe slicitar VoBo para mandar a producción, nunca asumir que todo cumple y deployarlo sin un VoBo humano.
+- Siempre actualiza MEMORY.md al terminar cada tarea
+- Nunca commites información delicada del proyecto (llaves, .env, etc.)
 
 ## Git
 

@@ -18,10 +18,13 @@ export default defineConfig({
     { name: 'escritorio', use: { ...devices['Desktop Chrome'], launchOptions } },
     { name: 'movil', use: { ...devices['Pixel 7'], launchOptions } },
   ],
+  // Compila con la clave de pruebas de Turnstile (si no hay una real) para que el formulario
+  // exista: un build de producción sin clave lo sustituye por un aviso.
   webServer: {
-    command: `npx astro preview --port ${puerto} --host 127.0.0.1 --ignore-lock`,
+    command: `npx astro build && npx astro preview --port ${puerto} --host 127.0.0.1 --ignore-lock`,
+    env: { PUBLIC_TURNSTILE_SITE_KEY: process.env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA' },
     url: `http://127.0.0.1:${puerto}`,
     reuseExistingServer: !process.env.CI,
-    timeout: 60_000,
+    timeout: 180_000,
   },
 });

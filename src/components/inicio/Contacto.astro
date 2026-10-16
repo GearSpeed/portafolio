@@ -2,13 +2,14 @@
 import Icono from '../Icono.astro';
 import { perfil } from '../../data/sitio';
 
-// Clave pública de Turnstile. Si falta, se usa la clave de pruebas de Cloudflare, que
-// siempre pasa en el navegador pero que la función del servidor rechaza con la clave
-// secreta real: el formulario no enviará correos hasta configurarla.
+// Clave pública de Turnstile; se incrusta al compilar. En desarrollo, si falta, se usa la
+// clave de pruebas de Cloudflare. En un build de producción sin clave no se muestra el
+// formulario (el widget de pruebas diría «Solo para pruebas»), sino un aviso para escribir
+// por correo. Las E2E compilan con la clave de pruebas explícita (playwright.config.ts).
 const CLAVE_PRUEBAS = '1x00000000000000000000AA';
-const claveTurnstile = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || CLAVE_PRUEBAS;
-if (claveTurnstile === CLAVE_PRUEBAS && import.meta.env.PROD) {
-  console.warn('[contacto] PUBLIC_TURNSTILE_SITE_KEY no está definida: se usa la clave de pruebas de Turnstile.');
+const claveTurnstile = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? CLAVE_PRUEBAS : '');
+if (!claveTurnstile) {
+  console.warn('[contacto] PUBLIC_TURNSTILE_SITE_KEY no está definida: el formulario se sustituye por un aviso.');
 }
 
 const garantias = ['Sin jerga técnica innecesaria', 'Enfoque en el problema de negocio, no solo en el código', 'Respondo personalmente cada mensaje'];
@@ -64,76 +65,88 @@ const tipos = [
       </div>
     </div>
 
-    <div class="card p-6 shadow-pop sm:p-10 lg:col-span-7">
-      <form id="formulario-contacto" action="/api/contacto" method="post" class="space-y-4" novalidate>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div class="space-y-1">
-            <label for="contacto-nombre" class="rotulo">Tu nombre o empresa</label>
-            <input
-              id="contacto-nombre"
-              name="nombre"
-              type="text"
-              required
-              maxlength="100"
-              autocomplete="name"
-              placeholder="Nombre o empresa"
-              class="campo"
-            />
-          </div>
-          <div class="space-y-1">
-            <label for="contacto-correo" class="rotulo">Correo electrónico</label>
-            <input
-              id="contacto-correo"
-              name="correo"
-              type="email"
-              required
-              maxlength="200"
-              autocomplete="email"
-              placeholder="correo@dominio.com"
-              class="campo"
-            />
-          </div>
+    {
+      claveTurnstile ? (
+        <div class="card p-6 shadow-pop sm:p-10 lg:col-span-7">
+          <form id="formulario-contacto" action="/api/contacto" method="post" class="space-y-4" novalidate>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div class="space-y-1">
+                <label for="contacto-nombre" class="rotulo">Tu nombre o empresa</label>
+                <input
+                  id="contacto-nombre"
+                  name="nombre"
+                  type="text"
+                  required
+                  maxlength="100"
+                  autocomplete="name"
+                  placeholder="Nombre o empresa"
+                  class="campo"
+                />
+              </div>
+              <div class="space-y-1">
+                <label for="contacto-correo" class="rotulo">Correo electrónico</label>
+                <input
+                  id="contacto-correo"
+                  name="correo"
+                  type="email"
+                  required
+                  maxlength="200"
+                  autocomplete="email"
+                  placeholder="correo@dominio.com"
+                  class="campo"
+                />
+              </div>
+            </div>
+  
+            <div class="space-y-1">
+              <label for="contacto-tipo" class="rotulo">Tipo de proyecto o necesidad</label>
+              <select id="contacto-tipo" name="tipo" class="campo">
+                {tipos.map((t) => <option value={t}>{t}</option>)}
+              </select>
+            </div>
+  
+            <div class="space-y-1">
+              <label for="contacto-mensaje" class="rotulo">Cuéntame brevemente sobre tu reto</label>
+              <textarea
+                id="contacto-mensaje"
+                name="mensaje"
+                required
+                minlength="10"
+                maxlength="5000"
+                rows="5"
+                placeholder="¿Qué objetivo buscas y en qué fase está tu iniciativa?"
+                class="campo resize-y"
+              ></textarea>
+            </div>
+  
+            {/* Trampa para bots: invisible para personas y lectores de pantalla. */}
+            <div class="absolute -left-[9999px]" aria-hidden="true">
+              <label for="contacto-sitio">No llenar este campo</label>
+              <input id="contacto-sitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+  
+            <div class="cf-turnstile" data-sitekey={claveTurnstile} data-theme="dark" data-language="es" data-size="flexible"></div>
+  
+            <button type="submit" class="btn btn-primario w-full disabled:cursor-wait disabled:opacity-70">
+              <span data-texto-boton>Enviar mensaje →</span>
+            </button>
+            <p id="contacto-estado" role="status" aria-live="polite" class="text-small"></p>
+          </form>
         </div>
-
-        <div class="space-y-1">
-          <label for="contacto-tipo" class="rotulo">Tipo de proyecto o necesidad</label>
-          <select id="contacto-tipo" name="tipo" class="campo">
-            {tipos.map((t) => <option value={t}>{t}</option>)}
-          </select>
+      ) : (
+        <div class="card flex flex-col items-start justify-center gap-4 p-6 sm:p-10 lg:col-span-7">
+          <p class="rotulo">Formulario en mantenimiento</p>
+          <p class="text-body text-ink-soft">Mientras tanto, escríbeme directo por correo y te respondo personalmente.</p>
+          <a href={`mailto:${perfil.correo}`} class="btn btn-primario">
+            <Icono nombre="mail" tamano={16} /> {perfil.correo}
+          </a>
         </div>
-
-        <div class="space-y-1">
-          <label for="contacto-mensaje" class="rotulo">Cuéntame brevemente sobre tu reto</label>
-          <textarea
-            id="contacto-mensaje"
-            name="mensaje"
-            required
-            minlength="10"
-            maxlength="5000"
-            rows="5"
-            placeholder="¿Qué objetivo buscas y en qué fase está tu iniciativa?"
-            class="campo resize-y"
-          ></textarea>
-        </div>
-
-        <!-- Trampa para bots: invisible para personas y lectores de pantalla. -->
-        <div class="absolute -left-[9999px]" aria-hidden="true">
-          <label for="contacto-sitio">No llenar este campo</label>
-          <input id="contacto-sitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off" />
-        </div>
-
-        <div class="cf-turnstile" data-sitekey={claveTurnstile} data-theme="dark" data-language="es" data-size="flexible"></div>
-
-        <button type="submit" class="btn btn-primario w-full disabled:cursor-wait disabled:opacity-70">
-          <span data-texto-boton>Enviar mensaje →</span>
-        </button>
-        <p id="contacto-estado" role="status" aria-live="polite" class="text-small"></p>
-      </form>
-    </div>
+      )
+    }
   </div>
 </section>
 
-<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{claveTurnstile && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
 
 <script>
   type Respuesta = { ok: boolean; mensaje: string };
