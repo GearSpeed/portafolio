@@ -8,7 +8,7 @@ periodo: Sep 2026 – hoy
 estado: En producción
 categoria: web
 sector: Retail · Venta en línea
-orden: 4
+orden: 6
 destacado: false
 resumen: El sitio público de Una vez más. Es estático, rápido y optimizado para SEO; toma el catálogo, los precios y la disponibilidad en vivo del sistema de gestión y cierra la venta por WhatsApp con el pedido ya escrito.
 problema: El negocio necesitaba vender en línea sin un servidor que mantener, con un catálogo que Google pudiera indexar, al día con el inventario real y sin prometer lo que el producto no es.

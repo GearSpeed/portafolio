@@ -8,7 +8,7 @@ periodo: Sep 2026 – hoy
 estado: En producción · uso diario
 categoria: negocio
 sector: Retail · Repostería
-orden: 3
+orden: 5
 destacado: false
 resumen: Un negocio real operaba compras, inventario y ventas en un Excel. Lo llevé en pocas semanas a un sistema web en producción que usan a diario el dueño y sus vendedoras.
 problema: Todo vivía en un Excel sin usuarios ni permisos. No se sabía cuánta mercancía traía cada vendedora y la utilidad real no se veía.

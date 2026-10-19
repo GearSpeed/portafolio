@@ -5,6 +5,8 @@ const rutas = [
   '/',
   '/proyectos/plataforma-educacion-financiera/',
   '/proyectos/plataforma-educacion-financiera-honduras/',
+  '/proyectos/administracion-educacion-financiera/',
+  '/proyectos/administracion-educacion-financiera-honduras/',
   '/proyectos/una-vez-mas/',
   '/proyectos/una-vez-mas-sitio-web/',
   '/proyectos/retazos-de-historia/',

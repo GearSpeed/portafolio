@@ -8,7 +8,7 @@ periodo: Oct 2026 – hoy
 estado: Publicando
 categoria: ia
 sector: IA · Automatización
-orden: 5
+orden: 7
 destacado: false
 resumen: Un canal de YouTube de curiosidades históricas producido casi por completo de forma automática. Diseñé el pipeline que investiga, narra, ilustra, renderiza y publica.
 problema: Publicar un video largo y tres Shorts al día, bien investigados y con fuentes, sin dedicarle horas de edición ni un presupuesto alto.
