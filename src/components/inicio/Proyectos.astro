@@ -2,22 +2,60 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Seccion from '../Seccion.astro';
-import { categoriasProyecto } from '../../data/sitio';
+import { contenido } from '../../data';
+import { idiomaDe, rutas } from '../../i18n';
 
-const proyectos = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
-const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
+const idioma = idiomaDe(Astro.currentLocale);
+const { categoriasProyecto } = contenido(idioma);
+const t = {
+  es: {
+    etiqueta: 'Portafolio',
+    titulo: 'Proyectos seleccionados',
+    intro: 'Una plataforma bancaria en tres países, un sistema de ventas en uso diario con su sitio web y un pipeline de video con IA.',
+    todos: 'Todos',
+    filtrar: 'Filtrar proyectos por categoría',
+    cliente: 'Proyecto de cliente',
+    propio: 'Proyecto propio',
+    problema: 'Problema:',
+    solucion: 'Solución:',
+    resultado: 'Resultado:',
+    tecnologias: 'Tecnologías principales',
+    ver: 'Ver caso de estudio →',
+    singular: 'proyecto',
+    plural: 'proyectos',
+  },
+  en: {
+    etiqueta: 'Portfolio',
+    titulo: 'Selected projects',
+    intro: 'A banking platform in three countries, a sales system in daily use with its website and an AI video pipeline.',
+    todos: 'All',
+    filtrar: 'Filter projects by category',
+    cliente: 'Client project',
+    propio: 'Personal project',
+    problema: 'Problem:',
+    solucion: 'Solution:',
+    resultado: 'Result:',
+    tecnologias: 'Main technologies',
+    ver: 'See case study →',
+    singular: 'project',
+    plural: 'projects',
+  },
+}[idioma];
+
+const proyectos = (await getCollection(idioma === 'en' ? 'proyectosEn' : 'proyectos')).sort((a, b) => a.data.orden - b.data.orden);
+const filtros = [['todos', t.todos], ...Object.entries(categoriasProyecto)];
 ---
 
 <Seccion
   id="proyectos"
   numero="02"
-  etiqueta="Portafolio"
-  titulo="Proyectos seleccionados"
-  intro="Una plataforma bancaria en tres países, un sistema de ventas en uso diario con su sitio web y un pipeline de video con IA."
+  etiqueta={t.etiqueta}
+  titulo={t.titulo}
+  intro={t.intro}
 >
   <!-- Los filtros solo se muestran con JavaScript; sin él se ven todos los proyectos. -->
   <div class="mb-6 flex flex-wrap items-center gap-3" data-filtros hidden>
-    <div role="group" aria-label="Filtrar proyectos por categoría" class="inline-flex flex-wrap gap-1.5 rounded-control border border-line bg-surface p-1">
+    <div role="group" aria-label={t.filtrar} class="inline-flex flex-wrap gap-1.5 rounded-control border border-line bg-surface p-1">
       {
         filtros.map(([valor, texto]) => (
           <button
@@ -31,7 +69,7 @@ const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
         ))
       }
     </div>
-    <p class="sr-only" role="status" aria-live="polite" data-filtros-estado></p>
+    <p class="sr-only" role="status" aria-live="polite" data-filtros-estado data-singular={t.singular} data-plural={t.plural}></p>
   </div>
 
   <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -55,37 +93,37 @@ const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
             <div class="flex flex-1 flex-col justify-between gap-6 p-6">
               <div>
                 <p class="rotulo">
-                  {data.tipo === 'cliente' ? 'Proyecto de cliente' : 'Proyecto propio'} · {data.estado}
+                  {data.tipo === 'cliente' ? t.cliente : t.propio} · {data.estado}
                 </p>
                 <h3 class="mt-1 text-h4 font-semibold">
-                  <a href={`/proyectos/${id}/`} class="after:absolute after:inset-0 after:content-['']">
+                  <a href={rutas.proyecto(idioma, id)} class="after:absolute after:inset-0 after:content-['']">
                     {data.titulo}
                   </a>
                 </h3>
                 <dl class="mt-3 space-y-2 text-small text-ink-muted">
                   <div>
-                    <dt class="inline font-medium text-ink">Problema:</dt>
+                    <dt class="inline font-medium text-ink">{t.problema}</dt>
                     <dd class="inline">{data.problema}</dd>
                   </div>
                   <div>
-                    <dt class="inline font-medium text-ink">Solución:</dt>
+                    <dt class="inline font-medium text-ink">{t.solucion}</dt>
                     <dd class="inline">{data.solucion}</dd>
                   </div>
                   <div>
-                    <dt class="inline font-medium text-ink">Resultado:</dt>
+                    <dt class="inline font-medium text-ink">{t.resultado}</dt>
                     <dd class="inline">{data.resultado}</dd>
                   </div>
                 </dl>
               </div>
 
               <div class="flex flex-col gap-3 border-t border-line pt-4">
-                <ul class="flex flex-wrap gap-1.5" aria-label="Tecnologías principales">
+                <ul class="flex flex-wrap gap-1.5" aria-label={t.tecnologias}>
                   {data.stack.slice(0, 4).map((t) => (
                     <li class="chip">{t}</li>
                   ))}
                 </ul>
                 <span class="text-label font-medium text-ink underline-offset-4 group-hover:underline" aria-hidden="true">
-                  Ver caso de estudio →
+                  {t.ver}
                 </span>
               </div>
             </div>
@@ -124,7 +162,7 @@ const filtros = [['todos', 'Todos'], ...Object.entries(categoriasProyecto)];
         tarjeta.hidden = !mostrar;
         if (mostrar) visibles++;
       });
-      if (estado) estado.textContent = `${visibles} proyecto${visibles === 1 ? '' : 's'}`;
+      if (estado) estado.textContent = `${visibles} ${visibles === 1 ? estado.dataset.singular : estado.dataset.plural}`;
     });
   });
 </script>

@@ -32,9 +32,10 @@ La primera vez que corras las E2E, instala el navegador con `npx playwright inst
 
 | Qué | Archivo |
 | --- | --- |
-| Datos personales, experiencia, habilidades, certificaciones | `src/data/sitio.ts` |
-| Casos de estudio (texto, cifras, stack) | `src/content/proyectos/*.md` |
-| CV descargable | `public/docs/CV_Omar_Deseusa_Sampayo.pdf` |
+| Datos personales, experiencia, habilidades, certificaciones | `src/data/sitio.ts` (español) y `src/data/sitio.en.ts` (inglés) |
+| Casos de estudio (texto, cifras, stack) | `src/content/proyectos/*.md` (español) y `src/content/proyectos-en/*.md` (inglés) |
+| Etiquetas de la interfaz | El diccionario `{ es, en }` de cada componente |
+| CV descargable | `public/docs/CV_Omar_Deseusa_Sampayo.pdf` (español) y `CV_Omar_Deseusa_Sampayo_EN.pdf` (inglés) |
 | Logo, favicon e imagen para redes | `public/img/`, `public/favicon*`, `public/apple-touch-icon.png` |
 | Cabeceras de seguridad y caché | `public/_headers` |
 

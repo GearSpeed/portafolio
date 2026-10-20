@@ -1,44 +1,83 @@
 ---
+import { idiomaDe, rutas } from '../../i18n';
+
 // Todo el caso sale del documento de contexto de Honduras (sección de diagnósticos).
-const enfoque = [
-  { paso: 'Reproducir', texto: 'Provoqué la falla en el servidor en lugar de suponer la causa a partir del reporte.' },
-  { paso: 'Medir', texto: 'La búsqueda del token aplicaba bcrypt a cada fila de la tabla: 72 ms por fila × 1,313 filas.' },
-  { paso: 'Corregir', texto: 'Con un análisis de complejidad algorítmica, eliminé el recorrido lineal sobre toda la tabla.' },
-];
+const idioma = idiomaDe(Astro.currentLocale);
+const t = {
+  es: {
+    rotulo: 'Caso de estudio en producción · Diagnóstico',
+    titulo: 'Resolver el problema real, no el síntoma',
+    intro:
+      'En la plataforma de Honduras, el enlace del correo de recuperación de contraseña devolvía un error 500. Llevaba así desde 2020 y nadie sabía por qué.',
+    antes: 'Antes · El síntoma',
+    antesValor: '95 segundos',
+    antesTexto: 'Contra un límite de ejecución de PHP de 30. No es que a veces fallara: no podía terminar nunca.',
+    despues: 'Después · La causa raíz',
+    despuesValor: '0.17 segundos',
+    despuesTexto: 'Corregido el recorrido que revisaba toda la tabla, hoy responde al instante y sigue en producción.',
+    enfoqueTitulo: 'El enfoque aplicado',
+    enfoque: [
+      { paso: 'Reproducir', texto: 'Provoqué la falla en el servidor en lugar de suponer la causa a partir del reporte.' },
+      { paso: 'Medir', texto: 'La búsqueda del token aplicaba bcrypt a cada fila de la tabla: 72 ms por fila × 1,313 filas.' },
+      { paso: 'Corregir', texto: 'Con un análisis de complejidad algorítmica, eliminé el recorrido lineal sobre toda la tabla.' },
+    ],
+    registrosAntes: 'Los registros contaban la historia:',
+    registrosCifra: '608 intentos de recuperación en 2020',
+    registrosDespues: ', luego 473, 195, 25 y apenas 2. No era falta de uso; era la gente rindiéndose.',
+    enlace: 'Ver el caso completo de Honduras →',
+  },
+  en: {
+    rotulo: 'Production case study · Diagnosis',
+    titulo: 'Solve the real problem, not the symptom',
+    intro:
+      'On the Honduras platform, the link in the password recovery email returned a 500 error. It had been that way since 2020 and nobody knew why.',
+    antes: 'Before · The symptom',
+    antesValor: '95 seconds',
+    antesTexto: 'Against a PHP execution limit of 30. It did not fail sometimes: it could never finish.',
+    despues: 'After · The root cause',
+    despuesValor: '0.17 seconds',
+    despuesTexto: 'With the full-table scan fixed, it now responds instantly and is still in production.',
+    enfoqueTitulo: 'The approach',
+    enfoque: [
+      { paso: 'Reproduce', texto: 'I triggered the failure on the server instead of guessing the cause from the report.' },
+      { paso: 'Measure', texto: 'The token lookup ran bcrypt on every row of the table: 72 ms per row × 1,313 rows.' },
+      { paso: 'Fix', texto: 'With an algorithmic complexity analysis, I removed the linear scan over the whole table.' },
+    ],
+    registrosAntes: 'The logs told the story:',
+    registrosCifra: '608 recovery attempts in 2020',
+    registrosDespues: ', then 473, 195, 25 and just 2. It was not lack of use; it was people giving up.',
+    enlace: 'See the full Honduras case →',
+  },
+}[idioma];
 ---
 
 <section id="caso-estudio" aria-labelledby="caso-estudio-titulo" class="mx-auto w-full max-w-7xl px-4 pt-24 md:px-8 lg:px-16">
   <div class="mx-auto max-w-4xl space-y-10 border-t border-line pt-10">
     <header class="space-y-3">
-      <p class="rotulo tracking-widest">Caso de estudio en producción · Diagnóstico</p>
-      <h2 id="caso-estudio-titulo" class="text-h3 font-bold md:text-h2">Resolver el problema real, no el síntoma</h2>
-      <p class="text-lead text-ink-muted">
-        En la plataforma de Honduras, el enlace del correo de recuperación de contraseña devolvía un error 500. Llevaba así desde 2020 y nadie
-        sabía por qué.
-      </p>
+      <p class="rotulo tracking-widest">{t.rotulo}</p>
+      <h2 id="caso-estudio-titulo" class="text-h3 font-bold md:text-h2">{t.titulo}</h2>
+      <p class="text-lead text-ink-muted">{t.intro}</p>
     </header>
 
     <div class="card grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
       <div class="space-y-1 rounded-control border border-line bg-canvas p-6">
-        <p class="rotulo text-danger">Antes · El síntoma</p>
-        <p class="text-h3 font-semibold text-ink">95 segundos</p>
-        <p class="text-small text-ink-muted">
-          Contra un límite de ejecución de PHP de 30. No es que a veces fallara: no podía terminar nunca.
-        </p>
+        <p class="rotulo text-danger">{t.antes}</p>
+        <p class="text-h3 font-semibold text-ink">{t.antesValor}</p>
+        <p class="text-small text-ink-muted">{t.antesTexto}</p>
       </div>
       <div class="space-y-1 rounded-control border border-line-strong bg-elevated p-6">
-        <p class="rotulo text-ink">Después · La causa raíz</p>
-        <p class="text-h3 font-semibold text-ink">0.17 segundos</p>
-        <p class="text-small text-ink-muted">Corregido el recorrido que revisaba toda la tabla, hoy responde al instante y sigue en producción.</p>
+        <p class="rotulo text-ink">{t.despues}</p>
+        <p class="text-h3 font-semibold text-ink">{t.despuesValor}</p>
+        <p class="text-small text-ink-muted">{t.despuesTexto}</p>
       </div>
     </div>
 
     <div class="space-y-6 text-body text-ink-soft">
       <div class="space-y-3 rounded-control border-l-2 border-ink bg-surface p-6">
-        <h3 class="text-h4 font-semibold">El enfoque aplicado</h3>
+        <h3 class="text-h4 font-semibold">{t.enfoqueTitulo}</h3>
         <ol class="space-y-2 text-small text-ink-muted">
           {
-            enfoque.map((e) => (
+            t.enfoque.map((e) => (
               <li>
                 <strong class="font-medium text-ink">{e.paso}:</strong> {e.texto}
               </li>
@@ -47,11 +86,10 @@ const enfoque = [
         </ol>
       </div>
       <p>
-        Los registros contaban la historia: <strong class="font-medium text-ink">608 intentos de recuperación en 2020</strong>, luego 473, 195, 25 y
-        apenas 2. No era falta de uso; era la gente rindiéndose.
+        {t.registrosAntes} <strong class="font-medium text-ink">{t.registrosCifra}</strong>{t.registrosDespues}
       </p>
-      <a href="/proyectos/plataforma-educacion-financiera-honduras/" class="inline-flex text-label font-medium text-ink underline underline-offset-4">
-        Ver el caso completo de Honduras →
+      <a href={rutas.proyecto(idioma, 'plataforma-educacion-financiera-honduras')} class="inline-flex text-label font-medium text-ink underline underline-offset-4">
+        {t.enlace}
       </a>
     </div>
   </div>

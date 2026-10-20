@@ -21,16 +21,15 @@ export const perfil = {
   githubUsuario: 'GearSpeed',
   linkedin: 'https://www.linkedin.com/in/omar-d-sampayo/',
   linkedinUsuario: 'omar-d-sampayo',
-  cv: '/docs/CV_Omar_Deseusa_Sampayo.pdf',
 } as const;
 
-export const navegacion = [
+export const navegacion: { href: string; texto: string }[] = [
   { href: '/#impacto', texto: 'Impacto' },
   { href: '/#proyectos', texto: 'Proyectos' },
   { href: '/#experiencia', texto: 'Experiencia' },
   { href: '/#sobre-mi', texto: 'Sobre mí' },
   { href: '/#contacto', texto: 'Contacto' },
-] as const;
+];
 
 export const metricas: {
   etiqueta: string;

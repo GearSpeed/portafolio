@@ -1,14 +1,22 @@
 ---
 import Seccion from '../Seccion.astro';
-import { metricas } from '../../data/sitio';
+import { contenido } from '../../data';
+import { idiomaDe } from '../../i18n';
+
+const idioma = idiomaDe(Astro.currentLocale);
+const { metricas } = contenido(idioma);
+const t = {
+  es: { etiqueta: 'Resultados verificables', titulo: 'Impacto medible en producción', intro: 'Cada cifra sale de un sistema real y lleva a su caso de estudio.' },
+  en: { etiqueta: 'Verifiable results', titulo: 'Measurable impact in production', intro: 'Every figure comes from a real system and links to its case study.' },
+}[idioma];
 ---
 
 <Seccion
   id="impacto"
   numero="01"
-  etiqueta="Resultados verificables"
-  titulo="Impacto medible en producción"
-  intro="Cada cifra sale de un sistema real y lleva a su caso de estudio."
+  etiqueta={t.etiqueta}
+  titulo={t.titulo}
+  intro={t.intro}
 >
   <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
     {

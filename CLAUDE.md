@@ -25,11 +25,17 @@ npm test                 # ambas
 ## Arquitectura
 
 - **Contenido separado de la presentación.**
-  - `src/data/sitio.ts` concentra todo el texto de la portada: perfil, navegación, métricas, experiencia, habilidades, educación, etc.
+  - `src/data/sitio.ts` concentra todo el texto de la portada (y `sitio.en.ts`, su traducción): perfil, navegación, métricas, experiencia, habilidades, educación, etc.
   - Los casos de estudio son la colección `proyectos` (`src/content/proyectos/*.md`), validada por el esquema Zod de `src/content.config.ts`.
   - Ese esquema impone límites de longitud (`resumen` ≤ 260, `problema`/`solucion`/`resultado` ≤ 220, `descripcionSeo` ≤ 170) y de 2 a 4 `cifras`; `astro build` falla si no se cumplen.
-  - El campo `orden` decide el orden de las tarjetas en la portada y el enlace al siguiente caso en `src/pages/proyectos/[id].astro`. `categoria` alimenta los filtros de la portada (etiquetas en `categoriasProyecto` de `sitio.ts`); `portada` (captura) es la imagen de la tarjeta y de la cabecera del caso.
+  - El campo `orden` decide el orden de las tarjetas en la portada y el enlace al siguiente caso en `src/components/CasoEstudio.astro`. `categoria` alimenta los filtros de la portada (etiquetas en `categoriasProyecto` de `sitio.ts`); `portada` (captura) es la imagen de la tarjeta y de la cabecera del caso.
   - La página de cada caso arma su índice lateral con los `##` del Markdown.
+- **Dos idiomas.** El español vive en la raíz (las URLs de siempre) y el inglés bajo `/en/` (`/en/projects/<id>/`, `/en/contact/sent/`, `/en/contact/error/`). `src/i18n.ts` tiene las rutas de cada idioma, `rutaEquivalente` (la misma página en el otro idioma, para el selector del encabezado y los `hreflang` de `Base.astro`) y los dos CV (`cvsPara`).
+  - Cada componente toma el idioma con `idiomaDe(Astro.currentLocale)`, el contenido con `contenido(idioma)` (`src/data/index.ts`: `sitio.ts` o `sitio.en.ts`) y sus etiquetas de un diccionario `{ es, en }` propio. Al cambiar un texto, cámbialo en los dos idiomas.
+  - Los casos en inglés son la colección `proyectosEn` (`src/content/proyectos-en/`), con el mismo nombre de archivo y esquema que su versión en español. Las reglas de contenido aplican igual en inglés.
+  - La portada (`src/components/Inicio.astro`) y el caso de estudio (`src/components/CasoEstudio.astro`) se comparten; las páginas de `src/pages/` y `src/pages/en/` solo los montan.
+  - La 404 es una sola (`src/pages/404.astro`, con un aviso en inglés): Cloudflare sirve `404.html` y Astro generaría la de `/en/` como `/en/404/index.html`.
+  - El formulario manda un campo `idioma`; con `en`, la función responde en inglés, redirige a `/en/contact/…` y marca el asunto con «(EN)». El correo a Omar va en español.
 - **Negritas en `sitio.ts`.** Los logros usan `**texto**`. `conNegritas` (`src/lib/texto.ts`) los escapa y los convierte en `<strong>`, y se renderizan con `set:html`. Todo texto que vaya a `set:html` debe pasar por ese escape.
 - **Formulario de contacto (mejora progresiva).**
   - `src/components/inicio/Contacto.astro` publica a `/api/contacto`. Con JavaScript usa `fetch` y pide JSON; sin JavaScript, la función responde con un 303 a `/contacto/enviado/` o `/contacto/error/`.
@@ -46,14 +52,14 @@ npm test                 # ambas
   - `ink-faint` (#555) no llega a 4.5:1 sobre negro: úsalo solo en adornos, nunca en texto.
   - Al pasar el cursor, las tarjetas solo avivan el borde (`hover:border-line-strong`); no se mueven ni cambian de escala.
 - **Portada.** Secciones en este orden: inicio, `#impacto` (métricas), `#proyectos` (filtros por `categoria`), `#caso-estudio`, `#experiencia`, `#sobre-mi` y `#contacto`. La navegación vive en `navegacion` de `sitio.ts`, y una prueba E2E comprueba que cada enlace apunte a una sección existente.
-- **SEO.** `src/layouts/Base.astro` arma los metadatos, Open Graph y el JSON-LD de `Person`. El sitemap excluye `/contacto/`.
+- **SEO.** `src/layouts/Base.astro` arma los metadatos, Open Graph, los `hreflang` de cada idioma y el JSON-LD de `Person`. El sitemap excluye `/contacto/` y `/en/contact/`.
 
 ## Reglas de contenido (las vigilan pruebas E2E)
 
 - **Ninguna cifra inventada.** Cada número o afirmación sale del CV o de los documentos de contexto de cada proyecto, que están fuera del repo. Los maquetados de Stitch de los que partió el diseño traían datos y puestos de relleno; se toma de ellos el diseño, nunca el contenido. La prueba «cifras de relleno» de `e2e/sitio.spec.ts` falla si reaparecen.
 - **Sistemas de clientes.** No se publica el nombre interno del proyecto de Banco Azteca: se llama «Plataforma de educación financiera». Tampoco se publica nada sobre cómo se accede a esos sistemas: rutas de administración, tipo de login o captcha, túneles, usuarios de base de datos, autenticación, topología de servidores ni controles de seguridad que falten.
   - Sí se pueden nombrar Grupo Salinas, Banco Azteca, CNBS, UCENM y UCRISH.
-  - La lista `terminosDeClientes` de `e2e/sitio.spec.ts` revisa el HTML de cada ruta. Si agregas una página, agrégala también a `rutas`.
+  - La lista `terminosDeClientes` de `e2e/sitio.spec.ts` revisa el HTML de cada ruta. Si agregas una página, agrégala también a `rutas`, en los dos idiomas.
 - **Capturas de pantalla** (`src/assets/proyectos/`, campo `portada` del Markdown): las que se publican ya van editadas. Antes de agregar una nueva, pixela el nombre del proyecto del cliente, las cifras privadas del negocio (ventas, utilidad, existencias) y los datos personales, como nombres de empleados o la cuenta personal de YouTube. La prueba de términos prohibidos no revisa imágenes.
 - **Imágenes siempre en `.webp`**, para mantener el sitio ligero. Toda imagen nueva se convierte antes de agregarla (por ejemplo con `sharp`, que ya viene con Astro; calidad 82–90) y se reduce al tamaño que de verdad se muestra. `getImage` también pide `format: 'webp'`. Únicas excepciones, por compatibilidad: `public/img/og.png` (LinkedIn y otras redes no muestran la vista previa en WebP), `favicon.ico`, `favicon-32.png` y `apple-touch-icon.png`.
 - **Foto de perfil** (`src/assets/foto-omar.webp`): en la presentación va encima del logo (`public/img/monograma-256.webp`). Si la foto no carga, queda a la vista el logo, sin JavaScript; una prueba E2E bloquea la foto para comprobarlo.

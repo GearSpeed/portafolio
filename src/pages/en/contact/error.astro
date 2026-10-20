@@ -1,0 +1,14 @@
+---
+import PaginaAviso from '../../../components/PaginaAviso.astro';
+import { perfil } from '../../../data/sitio.en';
+---
+
+<PaginaAviso
+  tituloPagina="Could not send · Omar Dev Sampayo"
+  etiqueta="Sending failed"
+  titulo="The message could not be sent"
+  texto="The anti-spam check may have expired or a field may have been empty. Try again or email me directly."
+  error
+>
+  <a href={`mailto:${perfil.correo}`} class="text-body text-ink underline underline-offset-4">{perfil.correo}</a>
+</PaginaAviso>

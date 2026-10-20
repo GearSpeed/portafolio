@@ -1,17 +1,26 @@
 ---
 import Icono from './Icono.astro';
-import { navegacion, perfil } from '../data/sitio';
+import { contenido } from '../data';
+import { cvsPara, idiomaDe, rutaEquivalente, rutas } from '../i18n';
+
+const idioma = idiomaDe(Astro.currentLocale);
+const { navegacion, perfil } = contenido(idioma);
+const otro = idioma === 'es' ? 'en' : 'es';
+const t = {
+  es: { lugar: 'Portafolio · CDMX', hablemos: 'Hablemos →', abrir: 'Abrir menú', cerrar: 'Cerrar menú', principal: 'Principal', movil: 'Principal (móvil)', descargar: 'Descargar', cambiar: 'English version' },
+  en: { lugar: 'Portfolio · CDMX', hablemos: "Let's talk →", abrir: 'Open menu', cerrar: 'Close menu', principal: 'Main', movil: 'Main (mobile)', descargar: 'Download', cambiar: 'versión en español' },
+}[idioma];
 ---
 
 <header class="fixed inset-x-0 top-0 z-50 border-b border-line bg-canvas/90 backdrop-blur-md">
   <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 md:px-8 lg:px-16">
-    <a href="/#inicio" class="flex min-w-0 items-center gap-3 rounded-sm">
+    <a href={`${rutas.inicio(idioma)}#inicio`} class="flex min-w-0 items-center gap-3 rounded-sm">
       <span class="truncate text-label font-semibold tracking-tight text-ink uppercase">{perfil.nombre}</span>
       <span class="hidden size-1.5 shrink-0 rounded-full bg-line-strong sm:inline-block" aria-hidden="true"></span>
-      <span class="rotulo hidden tracking-widest sm:inline">Portafolio · CDMX</span>
+      <span class="rotulo hidden tracking-widest sm:inline">{t.lugar}</span>
     </a>
 
-    <nav aria-label="Principal" class="hidden lg:block">
+    <nav aria-label={t.principal} class="hidden lg:block">
       <ul class="flex items-center gap-6">
         {
           navegacion.map((enlace) => (
@@ -27,10 +36,19 @@ import { navegacion, perfil } from '../data/sitio';
 
     <div class="flex items-center gap-2">
       <a
-        href="/#contacto"
+        href={rutaEquivalente(Astro.url.pathname, otro)}
+        hreflang={otro}
+        lang={otro}
+        class="inline-flex h-8 items-center rounded-full border border-line px-3 text-label font-medium text-ink-soft transition-colors hover:border-line-strong hover:text-ink"
+        data-cambio-idioma
+      >
+        {otro.toUpperCase()}<span class="sr-only"> · {t.cambiar}</span>
+      </a>
+      <a
+        href={`${rutas.inicio(idioma)}#contacto`}
         class="inline-flex items-center rounded-full bg-ink px-4 py-1.5 text-label font-medium whitespace-nowrap text-canvas transition-opacity hover:opacity-90"
       >
-        Hablemos →
+        {t.hablemos}
       </a>
       <button
         type="button"
@@ -38,7 +56,9 @@ import { navegacion, perfil } from '../data/sitio';
         class="inline-flex size-10 items-center justify-center rounded-control text-ink-soft hover:bg-elevated hover:text-ink lg:hidden"
         aria-controls="menu-movil"
         aria-expanded="false"
-        aria-label="Abrir menú"
+        aria-label={t.abrir}
+        data-abrir={t.abrir}
+        data-cerrar={t.cerrar}
       >
         <Icono nombre="menu" class="icono-abrir" />
         <Icono nombre="x" class="icono-cerrar hidden" />
@@ -46,7 +66,7 @@ import { navegacion, perfil } from '../data/sitio';
     </div>
   </div>
 
-  <nav id="menu-movil" aria-label="Principal (móvil)" class="hidden border-t border-line bg-elevated shadow-pop lg:hidden">
+  <nav id="menu-movil" aria-label={t.movil} class="hidden border-t border-line bg-elevated shadow-pop lg:hidden">
     <ul class="mx-auto flex max-w-7xl flex-col px-4 py-3 md:px-8">
       {
         navegacion.map((enlace) => (
@@ -57,11 +77,15 @@ import { navegacion, perfil } from '../data/sitio';
           </li>
         ))
       }
-      <li>
-        <a href={perfil.cv} download class="block rounded-control px-3 py-3 text-body font-medium text-ink-soft hover:bg-surface hover:text-ink">
-          Descargar CV (PDF)
-        </a>
-      </li>
+      {
+        cvsPara(idioma).map((cv) => (
+          <li>
+            <a href={cv.href} download hreflang={cv.idioma} class="block rounded-control px-3 py-3 text-body font-medium text-ink-soft hover:bg-surface hover:text-ink">
+              {t.descargar} {cv.etiqueta[idioma]} (PDF)
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </nav>
 </header>
@@ -74,7 +98,7 @@ import { navegacion, perfil } from '../data/sitio';
     if (!boton || !menu) return;
     menu.classList.add('hidden');
     boton.setAttribute('aria-expanded', 'false');
-    boton.setAttribute('aria-label', 'Abrir menú');
+    boton.setAttribute('aria-label', boton.dataset.abrir ?? '');
     boton.querySelector('.icono-abrir')?.classList.remove('hidden');
     boton.querySelector('.icono-cerrar')?.classList.add('hidden');
   }
@@ -85,7 +109,7 @@ import { navegacion, perfil } from '../data/sitio';
     if (abierto) return cerrar();
     menu.classList.remove('hidden');
     boton.setAttribute('aria-expanded', 'true');
-    boton.setAttribute('aria-label', 'Cerrar menú');
+    boton.setAttribute('aria-label', boton.dataset.cerrar ?? '');
     boton.querySelector('.icono-abrir')?.classList.add('hidden');
     boton.querySelector('.icono-cerrar')?.classList.remove('hidden');
   });

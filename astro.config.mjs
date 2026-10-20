@@ -9,10 +9,10 @@ export default defineConfig({
   // La compresión borra el salto de línea entre texto y etiqueta en línea («en<strong>0.17»),
   // que debe leerse como un espacio. El HTML pesa unos KB más; a cambio el texto es fiel.
   compressHTML: false,
-  integrations: [sitemap({ filter: (pagina) => !pagina.includes('/contacto/') })],
-  // Español hoy; la estructura queda lista para añadir /en después.
+  integrations: [sitemap({ filter: (pagina) => !pagina.includes('/contacto/') && !pagina.includes('/contact/') })],
+  // Español en la raíz (las URLs de siempre) e inglés bajo /en/. Ver src/i18n.ts.
   i18n: {
-    locales: ['es'],
+    locales: ['es', 'en'],
     defaultLocale: 'es',
   },
   vite: {

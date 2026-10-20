@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from './inicio/Hero.astro';
+import Metricas from './inicio/Metricas.astro';
+import Proyectos from './inicio/Proyectos.astro';
+import Diagnostico from './inicio/Diagnostico.astro';
+import Experiencia from './inicio/Experiencia.astro';
+import SobreMi from './inicio/SobreMi.astro';
+import Contacto from './inicio/Contacto.astro';
+import { contenido } from '../data';
+import { idiomaDe } from '../i18n';
+
+// La portada completa; la usan src/pages/index.astro (español) y src/pages/en/index.astro.
+const idioma = idiomaDe(Astro.currentLocale);
+const { perfil } = contenido(idioma);
+const y = idioma === 'en' ? 'and' : 'y';
+---
+
+<Base titulo={`${perfil.nombre} · ${perfil.rol} ${y} ${perfil.rolIA}`} descripcion={perfil.descripcion}>
+  <Hero />
+  <Metricas />
+  <Proyectos />
+  <Diagnostico />
+  <Experiencia />
+  <SobreMi />
+  <Contacto />
+</Base>

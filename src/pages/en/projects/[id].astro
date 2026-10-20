@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import CasoEstudio from '../../../components/CasoEstudio.astro';
+
+export async function getStaticPaths() {
+  const proyectos = (await getCollection('proyectosEn')).sort((a, b) => a.data.orden - b.data.orden);
+  return proyectos.map((proyecto, i) => ({
+    params: { id: proyecto.id },
+    props: { proyecto, siguiente: proyectos[(i + 1) % proyectos.length] },
+  }));
+}
+---
+
+<CasoEstudio {...Astro.props} />

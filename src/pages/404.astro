@@ -1,4 +1,6 @@
 ---
+// Única 404 del sitio (Cloudflare sirve 404.html para cualquier ruta que no existe), con un
+// aviso en inglés para quien llega desde /en/.
 import PaginaAviso from '../components/PaginaAviso.astro';
 ---
 
@@ -8,4 +10,8 @@ import PaginaAviso from '../components/PaginaAviso.astro';
   titulo="Esta ruta no existe"
   texto="Revisé los registros: no es un error del servidor, la página simplemente no está aquí."
   error
-/>
+>
+  <p lang="en" class="text-body text-ink-muted">
+    Page not found. <a href="/en/" class="text-ink underline underline-offset-4">Go to the English version</a>.
+  </p>
+</PaginaAviso>

@@ -13,6 +13,16 @@ const rutas = [
   '/contacto/enviado/',
   '/contacto/error/',
   '/ruta-que-no-existe',
+  '/en/',
+  '/en/projects/plataforma-educacion-financiera/',
+  '/en/projects/plataforma-educacion-financiera-honduras/',
+  '/en/projects/administracion-educacion-financiera/',
+  '/en/projects/administracion-educacion-financiera-honduras/',
+  '/en/projects/una-vez-mas/',
+  '/en/projects/una-vez-mas-sitio-web/',
+  '/en/projects/retazos-de-historia/',
+  '/en/contact/sent/',
+  '/en/contact/error/',
 ];
 
 // El widget de Turnstile no carga en pruebas: se bloquea para no depender de la red.
@@ -33,16 +43,18 @@ for (const ruta of rutas) {
   });
 }
 
-test('la portada no contiene cifras de relleno del maquetado', async ({ page }) => {
-  // Regla del proyecto: ninguna cifra sin respaldo en el CV o en los documentos de contexto.
-  await page.goto('/');
-  const texto = await page.locator('body').innerText();
-  // Los dos maquetados de Stitch traían datos de relleno; ninguno debe colarse al sitio.
-  const relleno = ['SLA', '99.9', '42 ms', 'Core Web Vitals', 'RDS', 'Nginx', '558x', 'omardeseusa', '99.8', '-92%', '64%', '45%', '0% discrepancia'];
-  for (const prohibido of relleno) {
-    expect(texto, `«${prohibido}» no debe aparecer`).not.toContain(prohibido);
-  }
-});
+for (const portada of ['/', '/en/']) {
+  test(`${portada} no contiene cifras de relleno del maquetado`, async ({ page }) => {
+    // Regla del proyecto: ninguna cifra sin respaldo en el CV o en los documentos de contexto.
+    await page.goto(portada);
+    const texto = await page.locator('body').innerText();
+    // Los dos maquetados de Stitch traían datos de relleno; ninguno debe colarse al sitio.
+    const relleno = ['SLA', '99.9', '42 ms', 'Core Web Vitals', 'RDS', 'Nginx', '558x', 'omardeseusa', '99.8', '-92%', '64%', '45%', '0% discrepancia'];
+    for (const prohibido of relleno) {
+      expect(texto, `«${prohibido}» no debe aparecer`).not.toContain(prohibido);
+    }
+  });
+}
 
 // Regla del proyecto: de los sistemas de clientes no se publica el nombre del proyecto
 // ni por dónde se entra o qué validación piden. Se revisa el HTML completo (incluye metadatos).
@@ -58,16 +70,18 @@ for (const ruta of rutas) {
   });
 }
 
-test('cada enlace de la navegación apunta a una sección que existe', async ({ page }) => {
-  await page.goto('/');
-  const destinos = await page.locator('header nav[aria-label="Principal"] a').evaluateAll((enlaces) =>
-    enlaces.map((a) => new URL((a as HTMLAnchorElement).href).hash.slice(1)),
-  );
-  expect(destinos.length).toBeGreaterThan(0);
-  for (const id of [...destinos, 'inicio']) {
-    await expect(page.locator(`#${id}`)).toHaveCount(1);
-  }
-});
+for (const portada of ['/', '/en/']) {
+  test(`${portada}: cada enlace de la navegación apunta a una sección que existe`, async ({ page }) => {
+    await page.goto(portada);
+    const destinos = await page.locator('header nav:not(#menu-movil) a').evaluateAll((enlaces) =>
+      enlaces.map((a) => new URL((a as HTMLAnchorElement).href).hash.slice(1)),
+    );
+    expect(destinos.length).toBeGreaterThan(0);
+    for (const id of [...destinos, 'inicio']) {
+      await expect(page.locator(`#${id}`)).toHaveCount(1);
+    }
+  });
+}
 
 test('los filtros muestran solo los proyectos de la categoría elegida', async ({ page }) => {
   await page.goto('/#proyectos');
@@ -116,10 +130,36 @@ test('la foto de perfil se ve y, si no carga, queda el logo', async ({ page }) =
   expect(await page.locator('#inicio img[data-foto]').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(0);
 });
 
-test('el CV se puede descargar', async ({ request }) => {
-  const respuesta = await request.get('/docs/CV_Omar_Deseusa_Sampayo.pdf');
-  expect(respuesta.ok()).toBe(true);
-  expect(respuesta.headers()['content-type']).toContain('pdf');
+test('los dos CV se pueden descargar desde ambos idiomas', async ({ page, request }) => {
+  for (const portada of ['/', '/en/']) {
+    await page.goto(portada);
+    const enlaces = page.locator('#inicio a[download]');
+    await expect(enlaces).toHaveCount(2);
+    for (const href of await enlaces.evaluateAll((as) => as.map((a) => a.getAttribute('href') ?? ''))) {
+      const respuesta = await request.get(href);
+      expect(respuesta.ok(), href).toBe(true);
+      expect(respuesta.headers()['content-type']).toContain('pdf');
+    }
+  }
+});
+
+test('el cambio de idioma lleva a la misma página en el otro idioma', async ({ page }) => {
+  await page.goto('/proyectos/una-vez-mas/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await page.locator('[data-cambio-idioma]').click();
+  await expect(page).toHaveURL(/\/en\/projects\/una-vez-mas\/$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Una vez más · Management');
+
+  await page.locator('[data-cambio-idioma]').click();
+  await expect(page).toHaveURL(/\/proyectos\/una-vez-mas\/$/);
+});
+
+test('la versión en inglés enlaza solo a páginas en inglés', async ({ page }) => {
+  await page.goto('/en/');
+  const internos = await page.locator('main a[href^="/"]').evaluateAll((as) => as.map((a) => a.getAttribute('href') ?? ''));
+  const fuera = internos.filter((h) => !h.startsWith('/en/') && !h.startsWith('/docs/'));
+  expect(fuera).toEqual([]);
 });
 
 test('las tarjetas de proyectos llevan a su caso de estudio', async ({ page }) => {
@@ -192,5 +232,30 @@ test.describe('formulario de contacto', () => {
     });
     await page.getByRole('button', { name: 'Enviar mensaje' }).click();
     await expect(page.locator('#contacto-estado')).toContainText('verificación antispam');
+  });
+
+  test('en inglés valida y envía con sus propios textos e idioma', async ({ page }) => {
+    let cuerpo = '';
+    await page.route('**/api/contacto', async (ruta) => {
+      cuerpo = ruta.request().postData() ?? '';
+      await ruta.fulfill({ json: { ok: true, mensaje: 'Message sent.' } });
+    });
+    await page.goto('/en/#contacto');
+    await page.getByRole('button', { name: 'Send message' }).click();
+    await expect(page.locator('#contacto-estado')).toContainText('Check the fields');
+
+    await page.getByLabel('Your name or company').fill('Ann Test');
+    await page.getByLabel('Email', { exact: true }).fill('ann@example.com');
+    await page.getByLabel('Tell me briefly').fill('Hi, I would like to talk about a project.');
+    await page.evaluate(() => {
+      const campo = document.createElement('input');
+      campo.type = 'hidden';
+      campo.name = 'cf-turnstile-response';
+      campo.value = 'token-de-prueba';
+      document.getElementById('formulario-contacto')?.append(campo);
+    });
+    await page.getByRole('button', { name: 'Send message' }).click();
+    await expect(page.locator('#contacto-estado')).toContainText('Message sent');
+    expect(cuerpo).toMatch(/name="idioma"\r\n\r\nen\r\n/);
   });
 });

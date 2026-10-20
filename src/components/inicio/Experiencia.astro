@@ -1,15 +1,35 @@
 ---
 import Seccion from '../Seccion.astro';
-import { experiencia } from '../../data/sitio';
+import { contenido } from '../../data';
+import { idiomaDe } from '../../i18n';
 import { conNegritas } from '../../lib/texto';
+
+const idioma = idiomaDe(Astro.currentLocale);
+const { experiencia } = contenido(idioma);
+const t = {
+  es: {
+    etiqueta: 'Trayectoria profesional',
+    titulo: 'Experiencia',
+    intro: 'De la operación de redes a liderar técnicamente una plataforma bancaria en tres países.',
+    enCurso: 'En curso',
+    tecnologias: 'Tecnologías',
+  },
+  en: {
+    etiqueta: 'Career',
+    titulo: 'Experience',
+    intro: 'From running networks to technically leading a banking platform in three countries.',
+    enCurso: 'Current',
+    tecnologias: 'Technologies',
+  },
+}[idioma];
 ---
 
 <Seccion
   id="experiencia"
   numero="03"
-  etiqueta="Trayectoria profesional"
-  titulo="Experiencia"
-  intro="De la operación de redes a liderar técnicamente una plataforma bancaria en tres países."
+  etiqueta={t.etiqueta}
+  titulo={t.titulo}
+  intro={t.intro}
 >
   <ol class="max-w-4xl space-y-4">
     {
@@ -25,7 +45,7 @@ import { conNegritas } from '../../lib/texto';
             </div>
             <p class="rotulo shrink-0 sm:pt-1.5">
               {p.periodo}
-              {p.actual && <span class="text-ink"> · En curso</span>}
+              {p.actual && <span class="text-ink"> · {t.enCurso}</span>}
             </p>
           </header>
 
@@ -44,7 +64,7 @@ import { conNegritas } from '../../lib/texto';
             </p>
           )}
 
-          <ul class="flex flex-wrap gap-1.5 pt-1" aria-label="Tecnologías">
+          <ul class="flex flex-wrap gap-1.5 pt-1" aria-label={t.tecnologias}>
             {p.stack.map((t) => (
               <li class="chip">{t}</li>
             ))}

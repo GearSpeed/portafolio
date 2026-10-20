@@ -2,13 +2,21 @@
 import { Image } from 'astro:assets';
 import Icono from '../Icono.astro';
 import foto from '../../assets/foto-omar.webp';
-import { perfil } from '../../data/sitio';
+import { contenido } from '../../data';
+import { cvsPara, idiomaDe } from '../../i18n';
 
-const enlaces = [
+const idioma = idiomaDe(Astro.currentLocale);
+const { perfil } = contenido(idioma);
+const t = {
+  es: { proyectos: 'Ver proyectos seleccionados →', conversacion: 'Iniciar conversación', pestana: '(abre en otra pestaña)' },
+  en: { proyectos: 'See selected projects →', conversacion: 'Start a conversation', pestana: '(opens in a new tab)' },
+}[idioma];
+
+const enlaces: { href: string; icono: string; texto: string; externo: boolean; idioma?: string }[] = [
   { href: perfil.linkedin, icono: 'linkedin', texto: 'LinkedIn', externo: true },
   { href: perfil.github, icono: 'github', texto: 'GitHub', externo: true },
   { href: `mailto:${perfil.correo}`, icono: 'mail', texto: perfil.correo, externo: false },
-  { href: perfil.cv, icono: 'file-text', texto: 'CV (PDF)', externo: false, descarga: true },
+  ...cvsPara(idioma).map((cv) => ({ href: cv.href, icono: 'file-text', texto: `${cv.etiqueta[idioma]} (PDF)`, externo: false, idioma: cv.idioma })),
 ];
 
 // «Dev» va en azul dentro del nombre.
@@ -46,8 +54,8 @@ const [nombre, apellido] = perfil.nombre.split(' Dev ');
   <p class="mt-4 max-w-2xl text-lead text-ink-soft">{perfil.lema}</p>
 
   <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-    <a href="#proyectos" class="btn btn-primario">Ver proyectos seleccionados →</a>
-    <a href="#contacto" class="btn btn-secundario">Iniciar conversación</a>
+    <a href="#proyectos" class="btn btn-primario">{t.proyectos}</a>
+    <a href="#contacto" class="btn btn-secundario">{t.conversacion}</a>
   </div>
 
   <ul class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-line pt-6 text-ink-muted">
@@ -57,12 +65,12 @@ const [nombre, apellido] = perfil.nombre.split(' Dev ');
           <a
             href={e.href}
             {...(e.externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            {...(e.descarga ? { download: '' } : {})}
+            {...(e.idioma ? { download: '', hreflang: e.idioma } : {})}
             class="inline-flex items-center gap-1.5 text-label font-medium transition-colors hover:text-ink"
           >
             <Icono nombre={e.icono} tamano={16} />
             {e.texto}
-            {e.externo && <span class="sr-only">(abre en otra pestaña)</span>}
+            {e.externo && <span class="sr-only">{t.pestana}</span>}
           </a>
         </li>
       ))

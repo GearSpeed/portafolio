@@ -124,4 +124,28 @@ describe('POST /api/contacto', () => {
     const error = await responderContacto(solicitud({ ...validos, correo: 'x' }, false), env);
     assert.equal(error.headers.get('Location'), 'https://omarsampayo.dev/contacto/error/');
   });
+
+  it('desde la versión en inglés responde y redirige en inglés', async () => {
+    const enviado = await responderContacto(solicitud({ ...validos, idioma: 'en' }), env);
+    assert.deepEqual(await enviado.json(), { ok: true, mensaje: 'Message sent.' });
+
+    const invalido = await responderContacto(solicitud({ ...validos, idioma: 'en', correo: 'x' }), env);
+    assert.equal((await invalido.json()).mensaje, 'Enter a valid email.');
+
+    const ok = await responderContacto(solicitud({ ...validos, idioma: 'en' }, false), env);
+    assert.equal(ok.headers.get('Location'), 'https://omarsampayo.dev/en/contact/sent/');
+    const error = await responderContacto(solicitud({ ...validos, idioma: 'en', correo: 'x' }, false), env);
+    assert.equal(error.headers.get('Location'), 'https://omarsampayo.dev/en/contact/error/');
+  });
+
+  it('marca en el asunto los mensajes que llegan desde la versión en inglés', async () => {
+    await responderContacto(solicitud({ ...validos, idioma: 'en' }), env);
+    const envio = llamadas.find((l) => l.url.includes('resend'));
+    assert.match(JSON.parse(String(envio?.init?.body)).subject, /^Portafolio \(EN\) · /);
+  });
+
+  it('un idioma desconocido se trata como español', async () => {
+    const respuesta = await responderContacto(solicitud({ ...validos, idioma: 'fr', correo: 'x' }), env);
+    assert.equal((await respuesta.json()).mensaje, 'Escribe un correo válido.');
+  });
 });
